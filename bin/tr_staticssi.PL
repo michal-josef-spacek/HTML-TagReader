@@ -133,6 +133,7 @@ sub readssifiles($$$$){
         $tag[0]=~s/\s+/ /g;
         if ($tag[0]=~/\#include virtual=(\S+)/){
             $incl=$1;
+            $incl=~s/-->\s*$//;
             $incl=~s/^['"]//;
             $incl=~s/['"]$//;
             if ($incl){
@@ -197,6 +198,8 @@ EXAMPLE:
 tr_staticssi -d /home/httpd/html index.shtml > expand.html
 
 tr_staticssi is part of the HTML::TagReader package.
+
+version $VERSION
 
 \n";
 exit;

@@ -39,7 +39,7 @@ __END__
 #
 no locale;
 use strict;
-use vars qw($opt_p $opt_h);
+use vars qw($opt_v $opt_p $opt_h);
 use Getopt::Std;
 use HTML::TagReader;
 use IO::Handle;
@@ -47,7 +47,7 @@ use IO::Handle;
 sub help();
 sub dfont($$);
 #
-getopts("hp")||die "ERROR: No such option. -h for help.\n";
+getopts("hpv")||die "ERROR: No such option. -h for help.\n";
 help() if ($opt_h);
 help() unless ($ARGV[0]);
 
@@ -95,7 +95,7 @@ sub dfont($$){
     }else{
         $fd_out->fdopen(fileno(STDOUT),"w")||die "ERROR: can not write to stdout\n";
     }
-    while(@tag = $p->getbytoken(0)){
+    while(@tag = $p->getbytoken($opt_v)){
         #
         if ($tag[1] eq "font"){
             $tmp=$tag[0];
@@ -133,7 +133,7 @@ sub help(){
 print "tr_delfont -- delete font tags that hardcode the size or
 the font face.
 
-USAGE: tr_delfont [-hp]  html-files
+USAGE: tr_delfont [-hpv]  html-files
 
 tr_delfont deletes all font tags that hardcode the size or the font face.
 The font color is not changed
@@ -144,6 +144,8 @@ OPTIONS:
      -h this help
 
      -p print to stdout and do not modify any files.
+
+     -v verbous messages about html errors.
 
 version $VERSION
          \n";
@@ -157,7 +159,7 @@ tr_delfont -- delete font tags that hardcode the size or the font face.
 
 =head1 SYNOPSIS
 
- tr_delfont [-hp]  html-files
+ tr_delfont [-hpv]  html-files
 
 =head1 DESCRIPTION
 
@@ -171,6 +173,8 @@ File access permissions are preserved.
 B<-h> short help
 
 B<-p> print to stdout and do not modify any files.
+
+B<-v> verbous messages about html errors.
 
 =head1 EXAMPLE
 

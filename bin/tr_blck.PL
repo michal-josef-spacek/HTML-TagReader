@@ -221,7 +221,7 @@ sub checkonefile($$){
         #---
         if ($ltype eq "/absfile"){
             unless($opt_d){
-                print "$file:$line:$cpos: ERROR: can not check $linktype=\"$path\", secify docroot with -d.\n";
+                print "$file:$line:$cpos: ERROR: can not check $linktype=\"$path\", specify docroot with option -d.\n";
                 next;
             }
             if ($path=~/^(.+)#/){ # link to named anchor

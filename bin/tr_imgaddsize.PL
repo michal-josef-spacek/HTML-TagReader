@@ -39,7 +39,7 @@ __END__
 #
 no locale;
 use strict;
-use vars qw($opt_p $opt_h);
+use vars qw($opt_v $opt_p $opt_h);
 use Getopt::Std;
 use Image::Size;
 use HTML::TagReader;
@@ -48,7 +48,7 @@ use IO::Handle;
 sub help();
 sub expandonefile($$);
 #
-getopts("hp")||die "ERROR: No such option. -h for help.\n";
+getopts("hpv")||die "ERROR: No such option. -h for help.\n";
 help() if ($opt_h);
 help() unless ($ARGV[0]);
 
@@ -96,7 +96,7 @@ sub expandonefile($$){
     }else{
         $fd_out->fdopen(fileno(STDOUT),"w")||die "ERROR: can not write to stdout\n";
     }
-    while(@tag = $p->getbytoken(0)){
+    while(@tag = $p->getbytoken($opt_v)){
         $origtag=$tag[0];
         if($tag[1] ne "img" ){
             # not a img tag
@@ -187,7 +187,7 @@ sub help(){
 print "tr_imgaddsize -- add width and height to <img src=...>
 tag 
 
-USAGE: tr_imgaddsize [-hp] html-files
+USAGE: tr_imgaddsize [-hpv] html-files
 
 tr_imgaddsize opens all files listed on the command line and
 edits them if needed. All <img src=...> get width and height
@@ -201,6 +201,7 @@ OPTIONS:
 
      -p print to stdout and do not modify any files.
 
+     -v verbous messages about html errors.
 
 tr_imgaddsize is part of the HTML::TagReader package.
 Note: This program needs Image::Size from
@@ -218,7 +219,7 @@ tr_imgaddsize -- add width and height to E<lt>img src=...E<gt>
 
 =head1 SYNOPSIS
 
-    tr_imgaddsize [-hp] html-files
+    tr_imgaddsize [-hpv] html-files
 
 =head1 DESCRIPTION
 
@@ -234,6 +235,8 @@ File access permissions are preserved.
 B<-h> short  help
 
 B<-p> print to stdout and do not modify any files.
+
+B<-v> verbous messages about html errors.
 
 =head1 EXAMPLE
 

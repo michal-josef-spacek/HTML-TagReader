@@ -98,3 +98,10 @@ Revision history for Perl extension HTML::TagReader.
 
 1.04 Sun Aug  3 04:23:40 CEST 2003
      - make it compile under windows
+
+1.05 Sat Aug 16 04:37:04 CEST 2003
+     - TagReader.xs updated to print warning about too long tag only once
+     - spelling errors in sample scripts updated
+     - new flag for verbosity introduced in sample scripts
+
+# end of changes

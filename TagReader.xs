@@ -326,6 +326,7 @@ PPCODE:
 			}
 			if (SvTRUE(showerrors) && bufpos > TAGREADER_MAX_TAGLEN){
 				PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, tag not terminated or too long.\n",self->filename,self->tagline);
+				state=3;
 			}
 			if (ch=='>') {
 				/* done reading this tag */

@@ -39,7 +39,7 @@ __END__
 #
 no locale;
 use strict;
-use vars qw($opt_c $opt_a $opt_h);
+use vars qw($opt_v $opt_c $opt_a $opt_h);
 use Getopt::Std;
 use HTML::TagReader;
 #
@@ -48,7 +48,7 @@ sub expandonefile($$);
 sub dirname($);
 sub linktype($);
 #
-getopts("hca")||die "ERROR: No such option. -h for help.\n";
+getopts("hcav")||die "ERROR: No such option. -h for help.\n";
 help() if ($opt_h);
 help() unless ($ARGV[1]);
 my $expr;
@@ -85,7 +85,7 @@ sub expandonefile($$){
 
     my $p=new HTML::TagReader "$infile";
     open(OUT,">$outfile")||die "ERROR: can not write $outfile\n";
-    while(@tag = $p->getbytoken(1)){
+    while(@tag = $p->getbytoken($opt_v)){
         # read out the tags:
         if($tag[1] eq ""){
             print OUT $tag[0];
@@ -132,7 +132,7 @@ sub help(){
 print "tr_mvlnk -- modify tags in html files with perl
 commands.
 
-USAGE: tr_mvlnk [-hac] perlexpr html-files
+USAGE: tr_mvlnk [-hacv] perlexpr html-files
 
 tr_mvlnk provides the tags in html code in \$_ to perlexpr
 and modifies the tags according to the perlexpr.
@@ -152,6 +152,8 @@ OPTIONS:
      -c includes comments. Normally comment tags are not passed
      to perlexpr. With this option set you can modify also comments.
 
+     -v verbous messages about html errors.
+
 EXAMPLES: 
      Change links to tldp.org/linuxfocus to linuxfocus.org:
      tr_mvlnk 's|tldp.org/linuxfocus|linuxfocus.org|' index.html
@@ -170,7 +172,7 @@ tr_mvlnk -- modify tags in html files with perl commands.
 
 =head1 SYNOPSIS
 
-USAGE: tr_mvlnk [-hac] perlexpr html-files
+USAGE: tr_mvlnk [-hacv] perlexpr html-files
 
 =head1 DESCRIPTION
 
@@ -192,6 +194,8 @@ B<-h> this help
 
 B<-c> includes comments. Normally comment tags are not passed
 to perlexpr. With this option set you can modify also comments.
+
+B<-v> verbous messages about html errors.
 
 =head1 EXAMPLE
 
