@@ -18,3 +18,5 @@ html_trbutton_small.xcf
 bin/tr_tagcontentgrep.PL
 bin/tr_fixltgt.PL
 bin/tr_imgaddsize.PL
+bin/tr_mailtoexpand.PL
+bin/tr_delfont.PL

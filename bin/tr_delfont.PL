@@ -39,15 +39,15 @@ __END__
 #
 no locale;
 use strict;
-use vars qw($opt_p $opt_v $opt_h);
+use vars qw($opt_p $opt_h);
 use Getopt::Std;
 use HTML::TagReader;
 use IO::Handle;
 #
 sub help();
-sub fixfile($$);
+sub dfont($$);
 #
-getopts("hpv")||die "ERROR: No such option. -h for help.\n";
+getopts("hp")||die "ERROR: No such option. -h for help.\n";
 help() if ($opt_h);
 help() unless ($ARGV[0]);
 
@@ -56,19 +56,19 @@ my $mode;
 for my $f (@ARGV){
     if ( -r "$f" ){
         if ($opt_p || $opt_h){
-            $changecount=fixfile("$f","$f");
+            $changecount=dfont("$f","$f");
         }else{
             $mode=(stat(_))[2];
-            rename($f,"$f.tr_fixltgt")||die "ERROR: can not rename $f to $f.tr_fixltgt, check directory permissions.\n";
-            $changecount=fixfile("$f.tr_fixltgt",$f);
+            rename($f,"$f.tr_delf")||die "ERROR: can not rename $f to $f.tr_delf, check directory permissions.\n";
+            $changecount=dfont("$f.tr_delf",$f);
             if ($changecount){
                 chmod($mode,$f)||die "ERROR: chmod %o $f failed\n";
-                unlink("$f.tr_fixltgt")||die "ERROR: unlink $f.tr_fixltgt failed\n";;
+                unlink("$f.tr_delf")||die "ERROR: unlink $f.tr_delf failed\n";;
             }else{
                 # nothing changed restore the old file and do not change
                 # modification time
                 unlink("$f");
-                rename("$f.tr_fixltgt",$f)||die "ERROR: can not rename $f.tr_fixltgt to $f, check directory permissions.\n";
+                rename("$f.tr_delf",$f)||die "ERROR: can not rename $f.tr_delf to $f, check directory permissions.\n";
             }
         }
     }else{
@@ -76,13 +76,15 @@ for my $f (@ARGV){
     }
 }
 # 
-# fix < and > 
+# handle one file
 #
-sub fixfile($$){
+sub dfont($$){
     my $infile=shift;
     my $outfile=shift; 
     my $count=0;
     my @tag;
+    my $state=0;
+    my ($adr,$name,$buf,$tmp);
 
     my $p=new HTML::TagReader "$infile";
     my $fd_out=new IO::Handle;
@@ -95,22 +97,31 @@ sub fixfile($$){
     }
     while(@tag = $p->getbytoken(0)){
         #
-        unless($tag[1] eq ""){
-            # not a text part
-            $fd_out->print($tag[0]) unless($opt_v);
+        if ($tag[1] eq "font"){
+            $tmp=$tag[0];
+            $count++;
+            $tmp=~s/\s/ /g;
+            if ($tmp=~/color ?=|face ?=/i){
+                # keep at least part of this tag
+                $state=0;
+                # remove size:
+                $tmp=~s/size ?=[^\s>]+//i;
+                $fd_out->print($tmp);
+            }else{
+                # remove totally
+                $state=1; 
+            }
             next;
-        } 
-        while ($tag[0]=~/(.{0,3}<.{0,3})/){
-            print STDERR "${outfile}:$tag[2]: changing < in ..$1.. to &lt;\n";
-            $tag[0]=~s/</&lt;/;
-            $count++;
         }
-        while ($tag[0]=~/(.{0,3}>.{0,3})/){
-            print STDERR "${outfile}:$tag[2]: changing > in ..$1.. to &gt;\n";
-            $tag[0]=~s/>/&gt;/;
-            $count++;
+        if ($tag[1] eq "/font"){
+            if ($state==1){
+                next; # remove
+            }
+            $state=0;
+            $fd_out->print($tag[0]);
+            next;
         }
-        $fd_out->print($tag[0]) unless($opt_v);
+        $fd_out->print($tag[0]);
     }
     $fd_out->flush;
     close(OUT) unless($opt_p);
@@ -119,15 +130,13 @@ sub fixfile($$){
 }
 #----------------------------------
 sub help(){
-print "tr_fixltgt -- fix < and > in text parts of html files to become 
-&lt; and &gt;
+print "tr_delfont -- delete font tags that hardcode the size or
+the font face.
 
-USAGE: tr_fixltgt [-hpv]  html-files
+USAGE: tr_delfont [-hp]  html-files
 
-tr_fixltgt opens all files listed on the command line and
-edits these files. It will fix < and > in text parts (not in Tags)
-and change them to &lt; and &gt;. This works of course only where
-the < and > are recognized as misplaced. 
+tr_delfont deletes all font tags that hardcode the size or the font face.
+The font color is not changed
 
 File access permissions are preserved.
 
@@ -135,10 +144,6 @@ OPTIONS:
      -h this help
 
      -p print to stdout and do not modify any files.
-
-     -v show only what would be changed but do not change anything
-
-tr_fixltgt is part of the HTML::TagReader package.
 
 version $VERSION
          \n";
@@ -148,19 +153,16 @@ __END__
 
 =head1 NAME
 
-tr_fixltgt -- fix E<lt> and E<gt> in text parts of html files to become 
-&lt; and &gt;
+tr_delfont -- delete font tags that hardcode the size or the font face.
 
 =head1 SYNOPSIS
 
- tr_fixltgt [-hpv]  html-files
+ tr_delfont [-hp]  html-files
 
 =head1 DESCRIPTION
 
-tr_fixltgt opens all files listed on the command line and
-edits these files. It will fix E<lt> and E<gt> in text parts (not in Tags)
-and change them to &lt; and &gt;. This works of course only where
-the E<lt> and E<gt> are recognized as misplaced. 
+tr_delfont deletes all font tags that hardcode the size or the font face.
+The font color is not changed
 
 File access permissions are preserved.
 
@@ -170,17 +172,15 @@ B<-h> short help
 
 B<-p> print to stdout and do not modify any files.
 
-B<-v> show only what would be changed but do not change anything
-
 =head1 EXAMPLE
 
-tr_fixltgt -v index.html
+tr_delfont -p index.html
 or to really change the file:
-tr_fixltgt index.html
+tr_delfont index.html
 
 =head1 AUTHOR
 
-tr_fixltgt is part of the HTML::TagReader package and was written by
+tr_delfont is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut

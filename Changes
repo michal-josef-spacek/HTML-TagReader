@@ -86,3 +86,6 @@ Revision history for Perl extension HTML::TagReader.
      - disable use of locale
      - updated TagReader.xs for c++ compatibility
      - pod sections updated to fix syntax errors
+
+1.01 Thu Jul  3 21:46:21 CEST 2003
+     - tr_delfont added

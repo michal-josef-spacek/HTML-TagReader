@@ -12,7 +12,7 @@ BEGIN {
 
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
-my @programs_to_install = qw(tr_fixltgt tr_blck tr_xlnk tr_llnk tr_mvlnk tr_httpcheck tr_staticssi tr_tagcontentgrep tr_imgaddsize);
+my @programs_to_install = qw(tr_fixltgt tr_blck tr_xlnk tr_llnk tr_mvlnk tr_httpcheck tr_staticssi tr_tagcontentgrep tr_imgaddsize tr_delfont);
 
 WriteMakefile(
     'NAME'	=> 'HTML::TagReader',
