@@ -51,7 +51,7 @@ typedef struct trstuct{
 
 /* start of a html tag (first char in the tag) */
 static inline int is_start_of_tag(int ch){
-	if (ch=='!' || ch=='/' || ch=='?' || isalpha(ch)){
+	if (ch=='!' || ch=='/' || ch=='?' || isalnum(ch)){
 		return(1);
 	}
 	return(0);

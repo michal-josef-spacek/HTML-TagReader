@@ -36,13 +36,15 @@ make test
 make install
 
 ------------------- ------------------- -------------------
-The subdirectory bin contains 4 applications of TagReader.
+The subdirectory bin contains some applications of TagReader.
 All of them start with the prefix "tr_"
 tr_blck -- check for broken relative links in html pages
 tr_llnk -- list links in html files
 tr_xlnk -- expand links on directories
 tr_mvlnk -- modify tags in html files with perl commands.
 tr_staticssi -- expand SSI directives #include virtual and #exec cmd
+tr_delfont -- delete font tags that hardcode the size or font face
+tr_delfont -- delete font tags that hardcode the size or font face
 
 tr_httpcheck -- check if a particular web-pages exists
              httpcheck does not directyl use the TagReader module

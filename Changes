@@ -89,3 +89,6 @@ Revision history for Perl extension HTML::TagReader.
 
 1.01 Thu Jul  3 21:46:21 CEST 2003
      - tr_delfont added
+
+1.02 Sat Jul 19 15:38:35 CEST 2003
+     - wrong tagtype if tag contained numbers such as e.g <h2>

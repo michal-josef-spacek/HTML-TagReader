@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 bootstrap HTML::TagReader $VERSION;
 
