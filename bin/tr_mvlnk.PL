@@ -108,6 +108,9 @@ sub expandonefile($$){
             } 
         }
         $tagnospace=$tag[0];
+        # decode URL encoding:
+        $tagnospace=~tr/+/ /;
+        $tagnospace=~s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
         $tagnospace=~s/\s+/ /g; # kill newline and double space
         $_=$tagnospace;
         eval $expr;

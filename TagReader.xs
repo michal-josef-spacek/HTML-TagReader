@@ -75,8 +75,8 @@ tr_new(class, filename)
 CODE:
 	int i;
 	char *str;
-	if (!SvPOK (filename)){
-		croak("ERROR: filename must be a string scalar ");
+	if (!SvPOKp(filename)){
+		croak("ERROR: filename must be a string scalar");
 	}    
 	/* malloc and zero the struct */
         Newz(0, RETVAL, 1, struct trstuct );

@@ -152,6 +152,9 @@ sub showonefile($){
                     # index.html#chapter1 should be index.html otherwise
                     # we can not use it with tar:
                     $path=~s/\#.*$//;
+                    # decode URL encoding:
+                    $path=~tr/+/ /;
+                    $path=~s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
                     # now try to expand links on directories with
                     # the appropriate index file:
                     $dir=dirname($infile);

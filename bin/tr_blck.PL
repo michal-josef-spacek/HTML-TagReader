@@ -191,7 +191,9 @@ sub checkonefile($$){
             print "$file:$tag[1]: ERROR, invalid or empty link $tag[0]\n" unless($opt_W);
             next;
         }
-        $origpath=$path;
+        # decode URL encoding:
+        $path=~tr/+/ /;
+        $path=~s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
         #---
         if ($ltype eq 'rel' || $ltype eq 'anchor' ){
             $count{'rel'}++;

@@ -160,6 +160,9 @@ sub expandonefile($$){
             $fd_out->print($origtag);
             next;
         }
+        # decode URL encoding:
+        $path=~tr/+/ /;
+        $path=~s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
         $dir=dirname($outfile);
         $ckpath="$dir/$path";
         if ( -f "$ckpath"){

@@ -108,4 +108,11 @@ Revision history for Perl extension HTML::TagReader.
     - tr_delfont updated
     - bugfix in tr_imgaddsize
 
+1.07 Sat Jul 31 23:45:41 CEST 2004
+    - ERROR: filename must be a string scalar at ... was printed in some cases even
+      if a scalar was provided.
+
+Sun Aug 22 19:01:44 CEST 2004
+    - add url decoding as suggested by Gerrit Renker
+
 # end of changes
