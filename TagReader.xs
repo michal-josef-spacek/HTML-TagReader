@@ -9,18 +9,21 @@
 #include <ctype.h>
 
 /* tags longer than TAGREADER_MAX_TAGLEN produce a warning about
-* not terminated tags */
-#define TAGREADER_MAX_TAGLEN 500
-#define BUFFLEN 7000
+* not terminated tags, must be much smaler than BUFFLEN */
+#define TAGREADER_MAX_TAGLEN 300
+/* BUFFLEN is the units in which we re-allocate mem, must be much bigger than
+* TAGREADER_MAX_TAGLEN */
+#define BUFFLEN 6000
 #define TAGREADER_TAGTYPELEN 20
 
 typedef struct trstuct{
 	char *filename;
 	int fileline;
 	int tagline;
-	char buffer[BUFFLEN + 1];
+	int currbuflen;
+	PerlIO *fd;
 	char tagtype[TAGREADER_TAGTYPELEN + 1];
-	FILE *fd;
+	char *buffer;
 } *HTML__TagReader;
 
 /* start of a html tag (first char in the tag) */
@@ -41,7 +44,7 @@ CODE:
 	int i;
 	char *str;
 	if (!SvPOK (filename)){
-		croak("filename must be a string scalar");
+		croak("ERROR: filename must be a string scalar ");
 	}    
 	/* malloc and zero the struct */
         Newz(0, RETVAL, 1, struct trstuct );
@@ -49,11 +52,14 @@ CODE:
 	/* malloc */
         New(0, RETVAL->filename, i+1, char );
 	strncpy(RETVAL->filename,str,i);
+	/* malloc initial buffer */
+        New(0, RETVAL->buffer, BUFFLEN+1, char );
+	RETVAL->currbuflen=BUFFLEN;
 	/* put a zero at the end of the string, perl might not do it */
 	*(RETVAL->filename + i )=(char)0;
-	RETVAL->fd=fopen(str,"r");
+	RETVAL->fd=PerlIO_open(str,"r");
 	if (RETVAL->fd == NULL){
-		croak("can not read file %s",str);
+		croak("ERROR: Can not read file \"%s\" ",str);
 	}
 	RETVAL->fileline=1;
 	RETVAL->tagline=0;
@@ -65,7 +71,8 @@ DESTROY(self)
 	HTML::TagReader self
 CODE:
 	Safefree(self->filename);
-	fclose(self->fd);
+	Safefree(self->buffer);
+	PerlIO_close(self->fd);
 	Safefree(self);
 
 void
@@ -88,18 +95,21 @@ PPCODE:
 	chn=(char)0;
 	self->tagline=self->fileline;
 	/* find the next tag */
-	while(state != 3 && (chn=fgetc(self->fd))!=EOF ){
+	while(state != 3 && (chn=PerlIO_getc(self->fd))!=EOF ){
 		if (ch==0){ /* read one more character ahead so we have always 2 */
 			ch=chn;
 			continue;
 		}
-		if (bufpos > BUFFLEN - 2 || bufpos > TAGREADER_MAX_TAGLEN){
+		/* we can not run out of mem because TAGREADER_MAX_TAGLEN
+		* is much smaller than BUFFLEN */
+		if (bufpos > TAGREADER_MAX_TAGLEN){
 			if (SvTRUE(showerrors)){
-				fprintf(stderr,"%s:%d: ERROR, tag not terminated or too long.\n",self->filename,self->tagline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, tag not terminated or too long.\n",self->filename,self->tagline);
 			}
-			state=0;
-			self->buffer[0]=(char)0; /* zero buffer*/
-			bufpos=0;
+			self->buffer[bufpos]=ch;bufpos++;
+			self->buffer[bufpos]=(char)0;bufpos++;
+			state=3;
+			continue; /* jump out of while */
 		}
 		if (ch=='\n') self->fileline++;
 		if (ch=='\n'|| ch=='\r' || ch=='\t' || ch==' ') {
@@ -124,7 +134,7 @@ PPCODE:
 					state=1;
 				}else{
 					if (SvTRUE(showerrors)){
-						fprintf(stderr,"%s:%d: ERROR, single \'<\' should be written as &gt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
 					}
 				}
 			}
@@ -144,7 +154,7 @@ PPCODE:
 			if(ch=='<'){
 				/* the tag that we were reading was not terminated but instead we ge a new opening */
 				if (SvTRUE(showerrors)){
-					fprintf(stderr,"%s:%d: ERROR, \'>\' inside a tag should be written as &lt;\n",self->filename,self->tagline);
+					PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, \'>\' inside a tag should be written as &gt;\n",self->filename,self->tagline);
 				}
 				state=1;
 				bufpos=0;
@@ -171,18 +181,18 @@ PPCODE:
 			break;
 		/*---*/
 			default:
-				fprintf(stderr,"%s:%d: Programm Error, state = %d\n",self->filename,self->fileline,state);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: Programm Error, state = %d\n",self->filename,self->fileline,state);
 				exit(1);
 		}
 		/* shift this and next char */
 		ch=chn;
 	}
 	/* put back chn for the next round */
-	if (chn!=EOF && ungetc(chn,self->fd)==EOF){
-		fprintf(stderr,"%s:%d: ERROR, TagReader library can not ungetc \"%c\" before returning\n",self->filename,self->fileline,chn);
+	if (chn!=EOF && PerlIO_ungetc(self->fd,chn)==EOF){
+		PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, TagReader library can not ungetc \"%c\" before returning\n",self->filename,self->fileline,chn);
 		exit(1);
 	}
-	/* terminate buffer*/
+	/* buffer was already terminated above */
 	if (state == 3){
 		/* we have found a tag */
 		if(GIMME == G_ARRAY){
@@ -228,7 +238,7 @@ PPCODE:
 	self->tagtype[typepos]=(char)0;
 	ch=(char)0;chn=(char)0;
 	/* find the next tag */
-	while(state != 3 && (chn=fgetc(self->fd))!=EOF ){
+	while(state != 3 && (chn=PerlIO_getc(self->fd))!=EOF ){
 		if (ch==0){ /* read one more character ahead so we have always 2 */
 			ch=chn;
 			continue;
@@ -245,7 +255,7 @@ PPCODE:
 				}else{
 					state=2; /* we will be reading a text/paragraph */
 					if (SvTRUE(showerrors)){
-						fprintf(stderr,"%s:%d: ERROR, single \'<\' should be written as &gt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
 					}
 				}
 			}else{
@@ -266,10 +276,10 @@ PPCODE:
 				}
 			}
 			if (ch=='<' && SvTRUE(showerrors)) {
-				fprintf(stderr,"%s:%d: ERROR, single \'<\' or tag starting at line %d not terminated\n",self->filename,self->fileline,self->tagline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' or tag starting at line %d not terminated\n",self->filename,self->fileline,self->tagline);
 			}
 			if (SvTRUE(showerrors) && bufpos > TAGREADER_MAX_TAGLEN){
-				fprintf(stderr,"%s:%d: ERROR, tag not terminated or too long.\n",self->filename,self->tagline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, tag not terminated or too long.\n",self->filename,self->tagline);
 			}
 			if (ch=='>') {
 				/* done reading this tag */
@@ -287,12 +297,15 @@ PPCODE:
 		/*---*/
 			case 2:
 			/* inside a text. Wait for start of tag */
+			if (ch=='>') {
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'>\' should be written as &gt;\n",self->filename,self->fileline);
+			}
 			if (ch=='<'){
 				if ( is_start_of_tag(chn)) { /* first char */
 					/* put the start of tag back, we want to
 					* return only the text part */
-					if (ungetc(chn,self->fd)==EOF){
-						fprintf(stderr,"%s:%d: ERROR, TagReader library can not ungetc \"%c\"\n",self->filename,self->fileline,chn);
+					if (PerlIO_ungetc(self->fd,chn)==EOF){
+						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, TagReader library can not ungetc \"%c\"\n",self->filename,self->fileline,chn);
 						exit(1);
 					}
 					chn=ch;
@@ -301,7 +314,7 @@ PPCODE:
 				}else{
 					state=2; /* we will be reading a text/paragraph */
 					if (SvTRUE(showerrors)){
-						fprintf(stderr,"%s:%d: ERROR, single \'<\' should be written as &gt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
 					}
 				}
 			}
@@ -323,16 +336,15 @@ PPCODE:
 			break;
 		/*---*/
 			default:
-				fprintf(stderr,"%s:%d: Programm Error, state = %d\n",self->filename,self->fileline,state);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: Programm Error, state = %d\n",self->filename,self->fileline,state);
 				exit(1);
 		}
 		/* shift this and next char */
 		ch=chn;
-		if (bufpos > BUFFLEN - 3){
-			if (SvTRUE(showerrors)){
-				fprintf(stderr,"%s:%d: ERROR, too long paragraph or tag.\n",self->filename,self->tagline);
-			}
-			state=3; /* jump out of here */
+		if (bufpos > self->currbuflen - 3){
+			/* we need more memory */
+			Renew(self->buffer, self->currbuflen + BUFFLEN + 1, char );
+			self->currbuflen+=BUFFLEN;
 		}
 	} /* end of while */
 	if (chn==EOF){
@@ -342,8 +354,8 @@ PPCODE:
 		}
 	}else{
 		/* put back chn for the next round */
-		if (ungetc(chn,self->fd)==EOF){
-			fprintf(stderr,"%s:%d: ERROR, TagReader library can not ungetc \"%c\" before returning\n",self->filename,self->fileline,chn);
+		if (PerlIO_ungetc(self->fd,chn)==EOF){
+			PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, TagReader library can not ungetc \"%c\" before returning\n",self->filename,self->fileline,chn);
 			exit(1);
 		}
 	}

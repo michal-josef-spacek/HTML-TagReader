@@ -50,7 +50,7 @@ help() unless ($ARGV[0]);
 my @possibilities= qw(index.html index.htm index.shtml default.htm index.php3 index.php index.wml);
 my $verbous=1; # default verbosity
 my $changecount=0;
-if ($opt_v ){
+if (defined $opt_v){
     if ($opt_v >=0 && $opt_v < 4){
         $verbous=$opt_v;
     }else{
@@ -130,6 +130,7 @@ sub expandonefile($$){
         } 
         $line=$tag[2];
         $tag[0]=~s/\s+/ /g; # kill newline and double space
+        next unless ($tag[0]=~/ (href|src|background) ?=/i);
         # remove optional space before the equal sign:
         $tag[0]=~s/ ?= ?/=/g;
         if ($tag[0]=~/ (href|src|background)=([^ >]+)/i){

@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -132,8 +132,7 @@ a '<' should be written as &lt;
 
 =head2 Limitations
 
-No text must be longer than 7k without some kind
-of tag inbetween.
+There are no limitation to the size of the file.
 
 If you need a more sophisticated interface you might want to take a look at
 HTML::Parser. HTML:TagReader is fast generic and straight forward to use.

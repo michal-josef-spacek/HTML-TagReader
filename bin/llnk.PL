@@ -116,6 +116,8 @@ sub showonefile($){
         } 
         $line=$tag[2];
         $tag[0]=~s/\s+/ /g; # kill newline and double space
+        next unless ($tag[0]=~/ (href|src|background) ?=/i);
+        #
         if ($tag[0]=~/ (href|src|background) ?= ?([^ >]+)/i){
             $linktype=$1;
             $path=$2;

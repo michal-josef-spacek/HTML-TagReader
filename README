@@ -162,8 +162,6 @@ DESCRIPTION
 
   Limitations
 
-    No text must be longer than 7k without some kind of tag inbetween.
-
     If you need a more sophisticated interface you might want to take a look
     at HTML::Parser. HTML:TagReader is fast generic and straight forward to
     use.

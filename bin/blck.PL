@@ -116,8 +116,8 @@ sub checkonefile($$){
     my $file=shift;
     my $later=shift; # whether or not to fill the checklater array
     my @tag;
-    my $tagtype; # one of: name href src background
-    my ($ckpath,$path,$ltype,$dir,$line,$origpath);
+    my $linktype; # one of: name href src background
+    my ($ckpath,$path,$ltype,$dir,$line,$origpath,$tagtype,$waitaclose);
 
     my $p=new HTML::TagReader "$file";
     $checkedfiles{"$file"}=1;
@@ -126,8 +126,17 @@ sub checkonefile($$){
         # <a name="xxxx" href="...."> .... </a>
         # is valid
         #
-        # we search for " name", " href", " src", " background": 
-        next unless($tag[0]=~/ name| href| src| background/i); 
+        # we search for " name", " href", " src", " background"
+        # there is max one space in the data returned by gettag:
+        if ($tag[0]=~m!<a !i){
+            $tagtype="aopen";
+        }elsif ($tag[0]=~m!</a\W!i){
+            $tagtype="aclose";
+            $waitaclose=0;
+        }else{
+            $tagtype=""
+        }
+        next unless($tag[0]=~/ name ?=| href ?=| src ?=| background ?=/i); 
         # remove optional space before the equal sign:
         $tag[0]=~s/ ?= ?/=/g;
         $tag[0]=~s/^<//;
@@ -135,19 +144,36 @@ sub checkonefile($$){
         $tag[0]=~s/[\"\']//g;
         $line=$tag[1];
         if ($tag[0]=~/ href=(\S+)/i){
-            $tagtype='href';
+            $linktype='href';
             $path=$1;
             $ltype=linktype($path);
+            if ($waitaclose){
+                print "$file:$waitaclose: ERROR, <a href=... starting on line $waitaclose not terminated\n" unless($opt_W);
+            }
+            if ($tagtype eq "aopen"){
+                $waitaclose=$line;
+            }else{
+                $waitaclose=0;
+            }
+            #
+            # We must alwasy check for anchors (name= and href=)
+            # A tag like <a name="xxxx" href="...."> .... </a> is possible.
+            # It is not possible to have background together with an anchor.
+            # It is also not possible to have nested anchors.
+            #
+            if ($tag[0]=~/ name=(\S+)/i){
+                $named_anchors{$file."#".$1}=$line;
+            }
         }elsif ($tag[0]=~/ name=(\S+)/i){
             $path=$1;
             $named_anchors{$file."#".$path}=$line;
             next;
         }elsif ($tag[0]=~/ src=(\S+)/i){
-            $tagtype='src';
+            $linktype='src';
             $path=$1;
             $ltype=linktype($path);
         }elsif ($tag[0]=~/ background=(\S+)/i){
-            $tagtype='background';
+            $linktype='background';
             $path=$1;
             $ltype=linktype($path);
         }else{
@@ -167,7 +193,7 @@ sub checkonefile($$){
         }
         if ($opt_a){
             if ($ltype eq "proto://" || $ltype eq "/absfile"){
-                print "$file:$line: $tagtype=\"$path\"\n";
+                print "$file:$line: $linktype=\"$path\"\n";
             }
             #
             # !! here we ignore the rest of this function
@@ -175,9 +201,9 @@ sub checkonefile($$){
             next;
         }
         #---
-        if ($ltype eq 'anchor'){
+        if ($ltype eq 'anchor'){ # relative anchor in the same file!
             # add path (with file name) and possible error message:
-            push(@checklater,[$file.$path,"$file:$line: reference to non existing anchor $tagtype=\"$path\"\n"]) if ($later);
+            push(@checklater,[$file.$path,"$file:$line: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
             next;
         }
         if ($ltype eq 'absanchor'){
@@ -191,9 +217,9 @@ sub checkonefile($$){
                 # ./index.html should be index.html
                 $path=~s/\.\///;
                 # add path and possible error message:
-                push(@checklater,["$dir/$path","$file:$line: reference to non existing anchor $tagtype=\"$path\"\n"]) if ($later);
+                push(@checklater,["$dir/$path","$file:$line: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
             }else{
-                print "$file:$line: reference to non existing file $tagtype=\"$path\"\n";
+                print "$file:$line: reference to non existing file $linktype=\"$path\"\n";
             }
             next;
         }
@@ -206,7 +232,7 @@ sub checkonefile($$){
         $ckpath=~s/\?.*//;
         if ($ltype eq 'rel'){
             unless ( -f "$dir/$ckpath" || -d "$dir/$ckpath" ){
-                print "$file:$line: broken link $tagtype=\"$path\"\n";
+                print "$file:$line: broken link $linktype=\"$path\"\n";
             }
         }
     }
@@ -388,7 +414,7 @@ all:
 
 =head1 AUTHOR
 
-xlnk is part of the HTML::TagReader package and was written by
+blck is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 
