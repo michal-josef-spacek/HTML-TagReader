@@ -13,4 +13,5 @@ bin/tr_mvlnk.PL
 bin/tr_httpcheck.PL
 bin/tr_staticssi.PL
 bin/run_without_installing
-
+html_trbutton_small.png
+html_trbutton_small.xcf

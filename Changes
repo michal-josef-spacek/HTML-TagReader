@@ -43,3 +43,9 @@ Revision history for Perl extension HTML::TagReader.
      - tr_llnk function flattenpath changed
      - tr_httpcheck be more tollerant about the input
      - do not remove // after things like http://...
+0.13 Sun Oct  6 09:55:55 CEST 2002
+     -"Warning, single '>' should be..." was printed even if showerrors
+      was not set.
+     - tr_tagcontentgrep added
+     - logo added (html_trbutton_small.png)
+

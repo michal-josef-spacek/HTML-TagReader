@@ -57,6 +57,8 @@ tr_httpcheck -- check if a particular web-pages exists
              can be used if you want to check your web-pages only 
              remotely via a web server. 
 
+tr_tagcontentgrep -- grep for a tag e.g "img src" 
+
 Note the primary desing goal of TagReader is to provide a fast
 way of reading/processing html files. 
 
@@ -74,8 +76,8 @@ and/or modify it under the same terms as Perl itself.
 Installation requirements: Perl and a c-compiler (e.g gcc)
 ------------------- ------------------- -------------------
 NAME
-    TagReader - Perl extension module for processing html/sgml/xml files
-    by tag.
+    TagReader - Perl extension module for reading html/sgml/xml files by
+    tags.
 
 SYNOPSIS
       use HTML::TagReader;
@@ -101,6 +103,10 @@ DESCRIPTION
 
     The getbytoken(0) is similar to while(<>) but instead of reading lines
     it reads tags or tags and text.
+
+    HTML::TagReader makes it easy to keep track of the line number in a file
+    even though you are not reading the file by line. This important if you
+    want to implement error messages about html error in your code.
 
     Here is a program that list all href tags in a html file together with
     it line numbers:
@@ -171,7 +177,9 @@ DESCRIPTION
 
     getbytoken() should be used to process a html file and possibly modify
     tags. As opposed to gettag() the getbytoken() does not remove newline or
-    space from the data.
+    space from the data. getbytoken() gives you access to the entire file
+    and not only to the tags. That is: you can process the tags and the text
+    between the tags.
 
     tagtype is always lower case. The tagtype is the string starting the tag
     such as "a" in <a href=""> or "!--" in <!-- comment -->. tagtype is
@@ -191,6 +199,17 @@ DESCRIPTION
 
     - A single '>' was found outside a tag.
 
+  Working without HTML::TagReader
+
+    In special cases it is possible to do processing of files by tag in an
+    efficient way without the HTML::TagReader package. This can be done by
+    setting the record separator variable in perl ($/). This causes however
+    problems with faulty html code where individual '<'-characters appear in
+    the middle of the text. An example of such a program written in plain
+    perl (without HTML::TagReader) is the tr_tagcontentgrep program which is
+    part of the HTML::TagReader distribution. Think first then write your
+    code! (HTML::TagReader is in most cases the best choice, not in all ;-)
+
   Limitations
 
     There are no limitation to the size of the file.
@@ -206,8 +225,8 @@ COPYRIGHT
     under the same terms as Perl itself.
 
 SEE ALSO
-    homepage of this program: http://linuxfocus.org/~guido/
-    or http://cpan.org/authors/id/G/GU/GUS/
+    homepage of this program: http://linuxfocus.org/~guido/ or
+    http://cpan.org/authors/id/G/GU/GUS/
 
     perl(1) HTML::Parser(3)
 

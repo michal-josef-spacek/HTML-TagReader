@@ -313,7 +313,9 @@ PPCODE:
 			case 2:
 			/* inside a text. Wait for start of tag */
 			if (ch=='>') {
-				PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'>\' should be written as &gt;\n",self->filename,self->fileline);
+				if (SvTRUE(showerrors)){
+					PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'>\' should be written as &gt;\n",self->filename,self->fileline);
+				}
 			}
 			if (ch=='<'){
 				if ( is_start_of_tag(chn)) { /* first char */

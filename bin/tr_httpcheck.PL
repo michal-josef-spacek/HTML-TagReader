@@ -36,7 +36,6 @@ use strict;
 use vars qw($opt_E $opt_e $opt_h $opt_s);
 use Getopt::Std;
 require 5.003;
-use strict;
 use Socket;
 # 
 sub interrupt();

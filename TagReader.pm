@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -143,6 +143,17 @@ warn about possible html syntax errors:
 a '<' should be written as &lt;
 
 - A single '>' was found outside a tag.
+
+=head2 Working without HTML::TagReader
+
+In special cases it is possible to do processing of files by tag in an
+efficient way without the HTML::TagReader package. This can be done by
+setting the record separator variable in perl ($/). This causes however
+problems with faulty html code where individual '<'-characters appear in
+the middle of the text. An example of such a program written in plain perl
+(without HTML::TagReader) is the tr_tagcontentgrep program which is part
+of the HTML::TagReader distribution. Think first then write your code!
+(HTML::TagReader is in most cases the best choice, not in all ;-)
 
 =head2 Limitations
 
