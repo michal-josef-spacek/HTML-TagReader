@@ -105,6 +105,7 @@ sub expandonefile($$){
     unless($opt_p){
         open(OUT,">$outfile")||die "ERROR: can not write $outfile\n";
         $fd_out->fdopen(fileno(OUT),"w")||die;
+        autoflush OUT 1;
     }else{
         $fd_out->fdopen(fileno(STDOUT),"w")||die "ERROR: can not write to stdout\n";
     }
@@ -197,6 +198,7 @@ sub expandonefile($$){
         }
         $fd_out->print($origtag);
     }
+    $fd_out->flush;
     close(OUT) unless($opt_p);
     $fd_out->close;
     return($count);

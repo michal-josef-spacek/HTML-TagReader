@@ -83,6 +83,7 @@ sub fixfile($$){
     unless($opt_p){
         open(OUT,">$outfile")||die "ERROR: can not write $outfile\n";
         $fd_out->fdopen(fileno(OUT),"w")||die;
+        autoflush OUT 1;
     }else{
         $fd_out->fdopen(fileno(STDOUT),"w")||die "ERROR: can not write to stdout\n";
     }
@@ -105,6 +106,7 @@ sub fixfile($$){
         }
         $fd_out->print($tag[0]) unless($opt_v);
     }
+    $fd_out->flush;
     close(OUT) unless($opt_p);
     $fd_out->close;
     return($count);

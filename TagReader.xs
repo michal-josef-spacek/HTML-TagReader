@@ -15,6 +15,7 @@
 * perlcall            Perl calling conventions from C
 */
 
+
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -22,6 +23,7 @@
 #include <string.h>
 #include <strings.h>
 #include <ctype.h>
+
 
 /* tags longer than TAGREADER_MAX_TAGLEN produce a warning about
 * not terminated tags, must be much smaler than BUFFLEN */
@@ -52,6 +54,8 @@ static inline int is_start_of_tag(int ch){
 }
 
 MODULE = HTML::TagReader	PACKAGE = HTML::TagReader	PREFIX = tr_	
+
+PROTOTYPES: ENABLE
 
 HTML::TagReader 
 tr_new(class, filename)

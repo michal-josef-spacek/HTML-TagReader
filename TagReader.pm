@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '0.50';
+$VERSION = '0.51';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -48,10 +48,10 @@ it reads tags or tags and text.
 
 HTML::TagReader makes it easy to keep track of the line number in a file
 even though you are not reading the file by line. This important if you
-want to implement error messages about html error in your code.
+want to implement error messages about html errors in your code.
 
 Here is a program that list all href tags
-in a html file together with it line numbers:
+in a html file together with line numbers:
 
     use TagReader;
     my $p=new TagReader "file.html";
@@ -72,7 +72,7 @@ wise:
     my @tag;
     while(@tag = $p->getbytoken(1)){
             if ($tag[1] eq ""){
-                    print "line: $tag[2]: not a tag (some text), \"$tag[0]\"\n\n";
+                    print "line: $tag[2]: col: $tag[2]: not a tag (some text), \"$tag[0]\"\n\n";
             }else{
                     print "line: $tag[2]: col: $tag[2]: is a tag, $tag[0]\n\n";
             }
@@ -82,10 +82,14 @@ wise:
 
 Returns a reference to a TagReader object. This reference can
 be used with gettag() or getbytoken() to read the next tag.
+You might want to test beforehand if the file is readable and
+produce your own error message if the file can not be read.
+The default HTML::TagReader behavior is to die with "ERROR: Can not 
+read file...".
 
 =head2 gettag($showerr);
 
-Returns in an array context tag, line number and character in the
+Returns in an array context tag, line number and character position in the
 line (column). In a scalar context just the next tag is returned.
  
 An empty string or and empty array is returned if the file contains
@@ -94,11 +98,11 @@ are ignored.
 
 The returned tag string has all white space (tab, newline...) reduced to just a
 single space otherwise upper and lower case, quotes etc are as in the
-original file. The line numbers are those where the tag
-starts.
+original file. The line numbers are those where the tags
+start.
 
 You must provide 0 (or undef) or 1 as an argument to gettag. 
-If 0 is provided then gettag will not print any errors if it finds
+If 0 is provided then gettag will not print warnings if it finds
 a syntax error in the html/sgml/xml code.
 
 Currently only the following warning messages are implemented to
@@ -120,18 +124,18 @@ In a scalar context just the next tag is returned.
 An empty string or and empty array is returned if the file contains
 no further tags. 
 
-getbytoken() should be used to process a html file and possibly
+getbytoken() should be used to process a HTML file and possibly
 modify tags. As opposed to gettag() the getbytoken() does not
 remove newline or space from the data. getbytoken() gives you 
 access to the entire file and not only to the tags. 
 That is: you can process the tags and the text between the tags. 
 
-tagtype is always lower case. The tagtype is the string starting
+$tagtype is always lower case. The $tagtype is the string starting
 the tag such as "a" in <a href=""> or "!--" in <!-- comment -->.
-tagtype is empty if this is not a tag (normal text or newline).
+$tagtype is empty if this is not a tag (normal text or newline).
 
 You must provide 0 (or undef) or 1 as an argument to getbytoken. 
-If 0 is provided then gettag will not print any errors if it finds
+If 0 is provided then getbytoken will not print any warnings if it finds
 a syntax error in the html/sgml/xml code.
 
 Currently only the following warning messages are implemented to
@@ -149,7 +153,7 @@ a '<' should be written as &lt;
 In special cases it is possible to do processing of files by tag in an
 efficient way without the HTML::TagReader package. This can be done by
 setting the record separator variable in perl ($/). This causes however
-problems with faulty html code where individual '<'-characters appear in
+problems with faulty HTML code where individual '<'-characters appear in
 the middle of the text. An example of such a program written in plain perl
 (without HTML::TagReader) is the tr_tagcontentgrep program which is part
 of the HTML::TagReader distribution. Think first then write your code!
@@ -160,7 +164,7 @@ of the HTML::TagReader distribution. Think first then write your code!
 There are no limitation to the size of the file.
 
 If you need a more sophisticated interface you might want to take a look at
-HTML::Parser. HTML:TagReader is fast generic and straight forward to use.
+HTML::Parser. HTML:TagReader is fast, generic and straight forward to use.
 
 =head1 COPYRIGHT
 
@@ -177,3 +181,4 @@ or http://cpan.org/authors/id/G/GU/GUS/
 perl(1) HTML::Parser(3)
 
 =cut
+
