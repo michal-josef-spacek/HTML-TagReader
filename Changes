@@ -39,3 +39,7 @@ Revision history for Perl extension HTML::TagReader.
 0.11 Sun Sep  1 21:53:30 CEST 2002
      - tr_blck add option -d for checking of abs file system links
      - tr_llnk cleanup path components with ".." xx/../yy -> yy
+0.12 Mon Sep  2 19:51:16 MET DST 2002
+     - tr_llnk function flattenpath changed
+     - tr_httpcheck be more tollerant about the input
+     - do not remove // after things like http://...

@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -161,6 +161,7 @@ under the same terms as Perl itself.
 =head1 SEE ALSO
 
 homepage of this program: http://linuxfocus.org/~guido/ 
+or http://cpan.org/authors/id/G/GU/GUS/
 
 perl(1) HTML::Parser(3)
 

@@ -203,6 +203,10 @@ sub showonefile($){
 # /yy/zz/vv/../../xx becomes /yy/xx
 sub flattenpath($){
     my $p=shift;
+    if ($p=~/^\w+:\/\//){
+        # something like http://...
+        return($p);
+    }
     # change x/./y to x/y
     $p=~s!/\./!/!g;
     # change ./yy/a -> yy/a
@@ -231,10 +235,14 @@ sub flattenpath($){
             while($j && $found==0){
                 $j--;
                 $cc=$components[$j];
-                if ($cc && $marker[$j] && $cc ne ".." && $cc ne "."){
+                if ($cc && $marker[$j] && $cc ne "."){
+                    $found=1;
+                    if ($cc eq ".."){
+                        # don't remove this, don't go further back
+                        next;
+                    }
                     $marker[$j]=0; #kill this component
                     $marker[$i]=0; #kill this component
-                    $found=1;
                 }
             }
         }
