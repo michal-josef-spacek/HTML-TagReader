@@ -1,0 +1,13 @@
+TagReader.xs
+TagReader.pm
+Makefile.PL
+test.pl
+Changes
+MANIFEST
+README
+typemap
+bin/blck.PL
+bin/xlnk.PL
+bin/llnk.PL
+bin/httpcheck.PL
+bin/run_without_installing
