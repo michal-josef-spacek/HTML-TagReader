@@ -83,10 +83,16 @@ for my $f (@ARGV){
 sub expandonefile($$){
     my $infile=shift;
     my $outfile=shift; 
+    my $dir=$infile; 
     my $count=0;
     my @tag;
     my ($origtag,$line,$path,$ltype);
 
+    if ($dir=~m|/|){
+        $dir=~s/\/[^\/]+$//; #basename, directory where file is
+    }else{
+        $dir=".";
+    }
     my $p=new HTML::TagReader "$infile";
     my $fd_out=new IO::Handle;
     unless($opt_p){
@@ -132,12 +138,13 @@ sub expandonefile($$){
             $fd_out->print($origtag);
             next;
         }
-        unless ( -r "$path"){ 
-            print STDERR "$outfile:$line: Warning, can not read file $path\n";
+        # now it is definitly a relative link:
+        unless ( -r "$dir/$path"){ 
+            print STDERR "$outfile:$line: Warning, can not read file $dir/$path\n";
             $fd_out->print($origtag);
             next;
         }
-        my $s=Image::Size::html_imgsize("$path");
+        my $s=Image::Size::html_imgsize("$dir/$path");
         if ($s){
             $count++;
             $origtag=$tag[0]; # space reduced

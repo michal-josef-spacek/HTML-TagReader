@@ -104,4 +104,8 @@ Revision history for Perl extension HTML::TagReader.
      - spelling errors in sample scripts updated
      - new flag for verbosity introduced in sample scripts
 
+1.06 Tue Oct  8 06:14:14 CEST 2003
+    - tr_delfont updated
+    - bugfix in tr_imgaddsize
+
 # end of changes

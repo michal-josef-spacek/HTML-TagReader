@@ -39,7 +39,7 @@ __END__
 #
 no locale;
 use strict;
-use vars qw($opt_v $opt_p $opt_h);
+use vars qw($opt_a $opt_v $opt_p $opt_h);
 use Getopt::Std;
 use HTML::TagReader;
 use IO::Handle;
@@ -47,7 +47,7 @@ use IO::Handle;
 sub help();
 sub dfont($$);
 #
-getopts("hpv")||die "ERROR: No such option. -h for help.\n";
+getopts("hpva")||die "ERROR: No such option. -h for help.\n";
 help() if ($opt_h);
 help() unless ($ARGV[0]);
 
@@ -101,11 +101,11 @@ sub dfont($$){
             $tmp=$tag[0];
             $count++;
             $tmp=~s/\s/ /g;
-            if ($tmp=~/color ?=|face ?=/i){
+            if (!$opt_a && $tmp=~/color ?= ?(['"#\w]+)/i){
                 # keep at least part of this tag
                 $state=0;
-                # remove size:
-                $tmp=~s/size ?=[^\s>]+//i;
+                # remove all but color:
+                $tmp="<font color=$1>";
                 $fd_out->print($tmp);
             }else{
                 # remove totally
@@ -143,6 +143,8 @@ File access permissions are preserved.
 OPTIONS: 
      -h this help
 
+     -a delete all font tags even the color attributes 
+
      -p print to stdout and do not modify any files.
 
      -v verbous messages about html errors.
@@ -171,6 +173,8 @@ File access permissions are preserved.
 =head1 OPTIONS
 
 B<-h> short help
+
+B<-a> delete all font tags even the color attributes 
 
 B<-p> print to stdout and do not modify any files.
 
