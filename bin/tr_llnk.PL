@@ -69,7 +69,7 @@ sub showonefile($){
     my $infile=shift;
     my @tag;
     my $linktype; # one of: name href src background
-    my ($waitclosetag,$origtag,$aline,$atag,$path,$tmp,$ltype,$line,$waitcount,$dir,$ckpath);
+    my ($waitclosetag,$origtag,$aline,$atag,$path,$tmp,$ltype,$line,$waitcount,$dir,$ckpath,$cpos);
 
     my $p=new HTML::TagReader "$infile";
     print "$infile\n" unless($opt_l);
@@ -115,6 +115,7 @@ sub showonefile($){
             next;
         } 
         $line=$tag[2];
+        $cpos=$tag[3];
         $tag[0]=~s/\s+/ /g; # kill newline and double space
         next unless ($tag[0]=~/ (href|src|background) ?=/i);
         #
@@ -128,7 +129,7 @@ sub showonefile($){
             }
             if ($tag[1] eq "a" && $opt_a ){
                 if ($waitclosetag){
-                    print STDERR "Warning: $infile:$line: \"<a ...\" starting at line $aline not terminated\n" unless($opt_W);
+                    print STDERR "Warning: $infile:$line:$cpos: \"<a ...\" starting at line $aline not terminated\n" unless($opt_W);
                     print "$infile:$aline: $atag\n";
                 }
                 # wait for closing "</a>"
@@ -139,7 +140,7 @@ sub showonefile($){
             }else{
                 # print now
                 if ($opt_l){
-                    print "$infile:$line: $tag[0]\n";
+                    print "$infile:$line:$cpos: $tag[0]\n";
                 }else{
                     # chop off the anchors unless -l was given:
                     # index.html#chapter1 should be index.html otherwise
@@ -192,7 +193,7 @@ sub showonefile($){
                 }
             }
         }else{
-            print STDERR "$infile:$line: Warning, broken link $tag[0]\n" unless($opt_W);
+            print STDERR "$infile:$line:$cpos: Warning, broken link $tag[0]\n" unless($opt_W);
         }
     }
 }
@@ -373,17 +374,17 @@ html files.
 
 =head1 OPTIONS
 
--h this help
+B<-h> this help
 
--a list for <a href=...> tags everything until </a>
+B<-a> list for <a href=...> tags everything until </a>
 This option implies (-l). You can not use this option
 in combination with tar to pack files together. This is 
 more to look at the links of a web page.
 
--A list all href=...,  src=..., and background=... tags
+B<-A> list all href=...,  src=..., and background=... tags
 whether they are relative or not.
 
--i index list. tr_llnk expands links on directories when possible
+B<-i> index list. tr_llnk expands links on directories when possible
 by adding the default index file. E.g "href=../" becomes
 "href=../index.html". This option specifies the search order
 for the index file. It is a comma seperated list of files.
@@ -392,14 +393,14 @@ index.html,index.htm,index.shtml,default.htm,index.php3,
 index.php,index.wml
 Note that this option is not relevant if -l or -a was specified.
 
--l print with filename, line number and entire tag. Note that errors
+B<-l> print with filename, line number and entire tag. Note that errors
 and warnings are always printed with filename and line numbers.
 If -l is given then the file names from the command line are
 not included unless they appear in one of the files as
 links. You can not use this in combination with tar to pack 
 files together.
 
--W do not print warnings about html errors (not terminated
+B<-W> do not print warnings about html errors (not terminated
 tags etc ...).
 
 =head1 EXAMPLE

@@ -50,3 +50,12 @@ Revision history for Perl extension HTML::TagReader.
      - logo added (html_trbutton_small.png)
 0.14 Sun Oct  6 15:22:49 CEST 2002 
      - tr_tagcontentgrep was missing in the package
+0.15 Fri Oct 18 23:19:08 CEST 2002
+     - tr_fixltgt added
+==========
+0.50 Wed Oct 23 22:15:09 CEST 2002
+     - added tr_imgaddsize
+     - Interface change: In an array context one more element is
+       returned. This is the column position on the line where the
+       Tag starts.
+

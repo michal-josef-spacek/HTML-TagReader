@@ -132,9 +132,9 @@ multiple spaces between "a" and "href".
 
 =head1 OPTIONS
 
- -h this help
+B<-h> this help
 
- -l list filename and line number
+B<-l> list filename and line number
 
 =head1 EXAMPLE
 

@@ -34,7 +34,9 @@
 typedef struct trstuct{
 	char *filename;
 	int fileline;
-	int tagline;
+	int tagline; /* file line where the tag starts */
+	int charpos; /* character pos in the line */
+	int tagcharpos; /* character pos where tag starts */
 	int currbuflen;
 	PerlIO *fd;
 	char tagtype[TAGREADER_TAGTYPELEN + 1];
@@ -76,6 +78,8 @@ CODE:
 	if (RETVAL->fd == NULL){
 		croak("ERROR: Can not read file \"%s\" ",str);
 	}
+	RETVAL->charpos=0;
+	RETVAL->tagcharpos=0;
 	RETVAL->fileline=1;
 	RETVAL->tagline=0;
 OUTPUT:
@@ -111,6 +115,7 @@ PPCODE:
 	self->tagline=self->fileline;
 	/* find the next tag */
 	while(state != 3 && (chn=PerlIO_getc(self->fd))!=EOF ){
+		self->charpos++;
 		if (ch==0){ /* read one more character ahead so we have always 2 */
 			ch=chn;
 			continue;
@@ -119,14 +124,17 @@ PPCODE:
 		* is much smaller than BUFFLEN */
 		if (bufpos > TAGREADER_MAX_TAGLEN){
 			if (SvTRUE(showerrors)){
-				PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, tag not terminated or too long.\n",self->filename,self->tagline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d:%d: Warning, tag not terminated or too long.\n",self->filename,self->tagline,self->charpos);
 			}
 			self->buffer[bufpos]=ch;bufpos++;
 			self->buffer[bufpos]=(char)0;bufpos++;
 			state=3;
 			continue; /* jump out of while */
 		}
-		if (ch=='\n') self->fileline++;
+		if (ch=='\n') {
+			self->fileline++;
+			self->charpos=0;
+		}
 		if (ch=='\n'|| ch=='\r' || ch=='\t' || ch==' ') {
 			ch=' ';
 			if (chn=='\n'|| chn=='\r' || chn=='\t' || chn==' '){
@@ -143,13 +151,14 @@ PPCODE:
 				if (is_start_of_tag(chn)) {
 					self->buffer[0]=(char)0;
 					bufpos=0;
+					self->tagcharpos=self->charpos;
 					/*line where tag starts*/
 					self->tagline=self->fileline;
 					self->buffer[bufpos]=ch;bufpos++;
 					state=1;
 				}else{
 					if (SvTRUE(showerrors)){
-						PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline,self->charpos);
 					}
 				}
 			}
@@ -169,7 +178,7 @@ PPCODE:
 			if(ch=='<'){
 				/* the tag that we were reading was not terminated but instead we ge a new opening */
 				if (SvTRUE(showerrors)){
-					PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, \'>\' inside a tag should be written as &gt;\n",self->filename,self->tagline);
+					PerlIO_printf(PerlIO_stderr(),"%s:%d:%d: Warning, \'>\' inside a tag should be written as &gt;\n",self->filename,self->tagline,self->charpos);
 				}
 				state=1;
 				bufpos=0;
@@ -203,6 +212,7 @@ PPCODE:
 		ch=chn;
 	}
 	/* put back chn for the next round */
+	self->charpos--;
 	if (chn!=EOF && PerlIO_ungetc(self->fd,chn)==EOF){
 		PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, TagReader library can not ungetc \"%c\" before returning\n",self->filename,self->fileline,chn);
 		exit(1);
@@ -211,10 +221,11 @@ PPCODE:
 	if (state == 3){
 		/* we have found a tag */
 		if(GIMME == G_ARRAY){
-			EXTEND(SP,2);
+			EXTEND(SP,3);
 			XST_mPV(0,self->buffer);
 			XST_mIV(1,self->tagline);
-			XSRETURN(2);
+			XST_mIV(2,self->tagcharpos);
+			XSRETURN(3);
 		}else{
 			EXTEND(SP,1);
 			XST_mPV(0,self->buffer);
@@ -254,23 +265,28 @@ PPCODE:
 	ch=(char)0;chn=(char)0;
 	/* find the next tag */
 	while(state != 3 && (chn=PerlIO_getc(self->fd))!=EOF ){
+		self->charpos++;
 		if (ch==0){ /* read one more character ahead so we have always 2 */
 			ch=chn;
 			continue;
 		}
-		if (ch=='\n') self->fileline++;
+		if (ch=='\n') {
+			self->fileline++;
+			self->charpos=0;
+		}
 		//printf("DBG ch%c chn%c state%d\n",ch ,chn,state);
 		self->buffer[bufpos]=ch;bufpos++;
 		switch (state) {
 		/*---*/
 			case 0:
+			self->tagcharpos=self->charpos;
 			if (ch=='<'){
 				if ( is_start_of_tag(chn)) { 
 					state=1; /* we will be reading a tag */
 				}else{
 					state=2; /* we will be reading a text/paragraph */
 					if (SvTRUE(showerrors)){
-						PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline,self->charpos);
 					}
 				}
 			}else{
@@ -314,13 +330,14 @@ PPCODE:
 			/* inside a text. Wait for start of tag */
 			if (ch=='>') {
 				if (SvTRUE(showerrors)){
-					PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'>\' should be written as &gt;\n",self->filename,self->fileline);
+					PerlIO_printf(PerlIO_stderr(),"%s:%d:%d: Warning, single \'>\' should be written as &gt;\n",self->filename,self->fileline,self->charpos);
 				}
 			}
 			if (ch=='<'){
 				if ( is_start_of_tag(chn)) { /* first char */
 					/* put the start of tag back, we want to
 					* return only the text part */
+					self->charpos--;
 					if (PerlIO_ungetc(self->fd,chn)==EOF){
 						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, TagReader library can not ungetc \"%c\"\n",self->filename,self->fileline,chn);
 						exit(1);
@@ -331,7 +348,7 @@ PPCODE:
 				}else{
 					state=2; /* we will be reading a text/paragraph */
 					if (SvTRUE(showerrors)){
-						PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline,self->charpos);
 					}
 				}
 			}
@@ -371,6 +388,7 @@ PPCODE:
 		}
 	}else{
 		/* put back chn for the next round */
+		self->charpos--;
 		if (PerlIO_ungetc(self->fd,chn)==EOF){
 			PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, TagReader library can not ungetc \"%c\" before returning\n",self->filename,self->fileline,chn);
 			exit(1);
@@ -383,11 +401,12 @@ PPCODE:
 	if (bufpos>0){
 		/* we have a tag or text and we return it */
 		if(GIMME == G_ARRAY){
-			EXTEND(SP,3);
+			EXTEND(SP,4);
 			XST_mPV(0,self->buffer);
 			XST_mPV(1,self->tagtype);
 			XST_mIV(2,self->tagline);
-			XSRETURN(3);
+			XST_mIV(3,self->tagcharpos);
+			XSRETURN(4);
 		}else{
 			EXTEND(SP,1);
 			XST_mPV(0,self->buffer);

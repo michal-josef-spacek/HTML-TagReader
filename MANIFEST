@@ -16,3 +16,5 @@ bin/run_without_installing
 html_trbutton_small.png
 html_trbutton_small.xcf
 bin/tr_tagcontentgrep.PL
+bin/tr_fixltgt.PL
+bin/tr_imgaddsize.PL

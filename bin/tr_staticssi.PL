@@ -214,9 +214,9 @@ from dynamic html.
 
 =head1 OPTIONS
 
--h short  help
+B<-h> short  help
 
--d the path to webserver document root directory
+B<-d> the path to webserver document root directory
 
 =head1 EXAMPLE
 

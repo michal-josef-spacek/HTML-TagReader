@@ -89,7 +89,7 @@ if ($later){
 sub checkonefile_nameonly($){
     my $file=shift;
     my @tag;
-    my ($path,$line);
+    my ($path,$line,$cpos);
 
     my $p=new HTML::TagReader "$file";
     $checkedfiles{"$file"}=1;
@@ -106,6 +106,7 @@ sub checkonefile_nameonly($){
         $tag[0]=~s/>$//;
         $tag[0]=~s/[\"\']//g;
         $line=$tag[1];
+        $cpos=$tag[2];
         if ($tag[0]=~/ name=(\S+)/i){
             $path=$1;
             $named_anchors{$file."#".$path}=$line;
@@ -120,7 +121,7 @@ sub checkonefile($$){
     my $later=shift; # whether or not to fill the checklater array
     my @tag;
     my $linktype; # one of: name href src background
-    my ($ckpath,$path,$ltype,$dir,$line,$origpath,$tagtype,$waitaclose);
+    my ($ckpath,$path,$ltype,$dir,$line,$origpath,$tagtype,$waitaclose,$cpos);
 
     my $p=new HTML::TagReader "$file";
     $checkedfiles{"$file"}=1;
@@ -146,6 +147,7 @@ sub checkonefile($$){
         $tag[0]=~s/>$//;
         $tag[0]=~s/[\"\']//g;
         $line=$tag[1];
+        $cpos=$tag[2];
         if ($tag[0]=~/ href=(\S+)/i){
             $linktype='href';
             $path=$1;
@@ -191,12 +193,12 @@ sub checkonefile($$){
         }
         if ($opt_r && $ltype eq "proto://"){
             if ($path=~/$opt_r/io){
-                print "$file:$line: warning abs link to \"$path\"\n";
+                print "$file:$line:$cpos: warning abs link to \"$path\"\n";
             }
         }
         if ($opt_a){
             if ($ltype eq "proto://"){
-                print "$file:$line: $linktype=\"$path\"\n";
+                print "$file:$line:$cpos: $linktype=\"$path\"\n";
             }
             #
             # !! here we ignore the rest of this function
@@ -206,28 +208,28 @@ sub checkonefile($$){
         #---
         if ($ltype eq 'anchor'){ # relative anchor in the same file!
             # add path (with file name) and possible error message:
-            push(@checklater,[$file.$path,"$file:$line: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
+            push(@checklater,[$file.$path,"$file:$line:$cpos: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
             next;
         }
         #---
         if ($ltype eq "/absfile"){
             unless($opt_d){
-                print "$file:$line: ERROR: can not check $linktype=\"$path\", secify docroot with -d.\n";
+                print "$file:$line:$cpos: ERROR: can not check $linktype=\"$path\", secify docroot with -d.\n";
                 next;
             }
             if ($path=~/^(.+)#/){ # link to named anchor
                 $ckpath=$1;
                 if ( -f "$opt_d/$ckpath" ){
                     # add path and possible error message:
-                    push(@checklater,["$opt_d/$path","$file:$line: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
+                    push(@checklater,["$opt_d/$path","$file:$line:$cpos: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
                 }else{
-                    print "$file:$line: reference to non existing file $linktype=\"$path\"\n";
+                    print "$file:$line:$cpos: reference to non existing file $linktype=\"$path\"\n";
                 }
                 next;
             }
             $ckpath=$path;
             unless ( -f "$opt_d/$ckpath" || -d "$opt_d/$ckpath" ){
-                print "$file:$line: broken link $linktype=\"$path\"\n";
+                print "$file:$line:$cpos: broken link $linktype=\"$path\"\n";
             }
             next;
         }
@@ -240,14 +242,14 @@ sub checkonefile($$){
                 # ./index.html should be index.html
                 $path=~s/\.\///;
                 # add path and possible error message:
-                push(@checklater,["$dir/$path","$file:$line: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
+                push(@checklater,["$dir/$path","$file:$line:$cpos: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
             }else{
-                print "$file:$line: reference to non existing file $linktype=\"$path\"\n";
+                print "$file:$line:$cpos: reference to non existing file $linktype=\"$path\"\n";
             }
             next;
         }
         if ($ltype eq 'file:'){
-            print "$file:$line: warning link with \"file:$path\"\n" unless($opt_W);
+            print "$file:$line:$cpos: warning link with \"file:$path\"\n" unless($opt_W);
             next;
         }
         # handle cgi's:
@@ -257,7 +259,7 @@ sub checkonefile($$){
         # finally check if this is a broken link:
         if ($ltype eq 'rel'){
             unless ( -f "$dir/$ckpath" || -d "$dir/$ckpath" ){
-                print "$file:$line: broken link $linktype=\"$path\"\n";
+                print "$file:$line:$cpos: broken link $linktype=\"$path\"\n";
             }
         }
     }
@@ -353,6 +355,9 @@ EXAMPLE
 
        You  can  use  the  vim  editor  Quickfix  mode   or   the
        emacs/xemacs M-x compile to parse the output of tr_blck.
+       Vim: :cf file_with_err_messages, :cn to go to the next message
+       emacs: M-x compile, compile command: cat file_with_err_messages
+
        This gives you the possibility to open the  concerned  web
        page  and  jump directly to the line where the broken link
        is.  To do this you can write a Makefile that looks e.g as
@@ -406,23 +411,23 @@ and background=...  are checked.
 
 =head1 OPTIONS
 
--h short help message
+B<-h> short help message
 
--a print all links that were not checked (proto://) and
+B<-a> print all links that were not checked (proto://) and
 do not check for any broken links. This output can be
 processed further with httpcheck.
 
--A do not open any other files than the files given on the
+B<-A> do not open any other files than the files given on the
 
--d document root directory to check abs. filesystem links
-e.g -d /home/httpd/html
+B<-d> document root directory to check abs. filesystem links
+e.g B<-d> /home/httpd/html
 
--r warn about absolut links matching the given perl regexp
-E.g: -w \'www.linuxfocus.org|chem.pitt.edu\'
+B<-r> warn about absolut links matching the given perl regexp
+E.g: B<-w> \'www.linuxfocus.org|chem.pitt.edu\'
 This match is not case sensitive and only applied to links
 starting with proto:// (=absolut links).
 
--W do not print warnings about html errors (not terminated
+B<-W> do not print warnings about html errors (not terminated
 tags etc ...).
 
 =head1 EXAMPLE
@@ -437,6 +442,9 @@ Check links in all html files on the server:
 
 You  can  use  the  vim  editor  Quickfix  mode   or   the
 emacs/xemacs M-x compile to parse the output of tr_blck.
+Vim: :cf file_with_err_messages, :cn to go to the next message
+emacs: M-x compile, compile command: cat file_with_err_messages
+
 This gives you the possibility to open the  concerned  web
 page  and  jump directly to the line where the broken link
 is.  To do this you can write a Makefile that looks e.g as

@@ -17,13 +17,14 @@ print "ok 1\n";
 # Insert your test code below (better if it prints "ok 13"
 # (correspondingly "nok ok 13") depending on the success of chunk 13
 # of the test code):
-open(OUT,"> /tmp/pltest.$$")||die "ERROR: can not write /tmp/pltest.$$\n";
+my $tf=".pltest.$$";
+open(OUT,"> $tf")||die "ERROR: can not write $tf\n";
 print OUT "bla < <tag \t\n1>\n";
-print OUT "<a href=\"http://linuxfocus.org\">\n";
+print OUT " <a href=\"http://linuxfocus.org\">\n";
 print OUT "<!-- <br> ------>\n";
 close OUT;
 
-my $ptr=new HTML::TagReader "/tmp/pltest.$$";
+my $ptr=new HTML::TagReader "$tf";
 my $i=2;
 my $tmp=$ptr->gettag(0);
 if ($tmp eq "<tag 1>"){
@@ -43,6 +44,13 @@ if ($tag[1] == 3){
 }
 $i++;
 
+# " <a hre starts at pas 2
+if ($tag[2] == 2){
+	print "ok $i\n";
+}else{
+	print "nok $i\n";
+}
+$i++;
 
 if ($tag[0] eq "<a href=\"http://linuxfocus.org\">"){
 	print "ok $i\n";
@@ -73,17 +81,17 @@ if ($tmp eq ""){
 $i++;
 
 
-unlink("/tmp/pltest.$$");
+unlink("$tf");
 
-
-open(OUT,"> /tmp/pltest_getbytoken.$$")||die "ERROR: can not write /tmp/pltest_getbytoken.$$\n";
+$tf=".pltest_getbytoken.$$";
+open(OUT,"> $tf")||die "ERROR: can not write $tf\n";
 print OUT "<bla a=x> < <tag \t\n1>\n";
 print OUT "<!DOCTYPE xx><TITLE>The web</TITLE>\n";
 print OUT "<a href=\"http://linuxfocus.org\">\n";
 print OUT "<!--- <br> ------>\n \n<ende>\n";
 close OUT;
 
-my $p=new HTML::TagReader "/tmp/pltest_getbytoken.$$";
+my $p=new HTML::TagReader "$tf";
 #7
 @tag = $p->getbytoken("x");
 if ($tag[0] eq "<bla a=x>" && $tag[1] eq "bla" && $tag[2] == 1){
@@ -121,6 +129,14 @@ $i++;
 @tag = $p->getbytoken(1);
 @tag = $p->getbytoken(1);
 if ($tag[0] eq "The web" && $tag[1] eq "" && $tag[2] == 3){
+	print "ok $i\n";
+}else{
+	print "nok $i (@tag)\n";
+}
+$i++;
+
+# "The web" starts at charpos 21
+if ($tag[3] == 21){
 	print "ok $i\n";
 }else{
 	print "nok $i (@tag)\n";
@@ -199,14 +215,15 @@ unless (@tag = $p->getbytoken(1)){
 $i++;
 
 
-unlink("/tmp/pltest_getbytoken.$$");
+unlink("$tf");
 
-open(OUT,"> /tmp/pltest_getbytoken2.$$")||die "ERROR: can not write /tmp/pltest_getbytoken2.$$\n";
+$tf=".pltest_getbytoken2.$$";
+open(OUT,"> $tf")||die "ERROR: can not write $tf\n";
 my $entirefile="<bla a=x> < <tag \t\n1>\n<!DOCTYPE xx><TITLE>The web</TITLE>\n";
 print OUT $entirefile;
 close OUT;
 
-$p=new HTML::TagReader "/tmp/pltest_getbytoken2.$$";
+$p=new HTML::TagReader "$tf";
 
 my $readfile="";
 while(@tag = $p->getbytoken(0)){
@@ -219,4 +236,4 @@ if ($readfile eq $entirefile){
 }
 $i++;
 
-unlink("/tmp/pltest_getbytoken2.$$");
+unlink("$tf");

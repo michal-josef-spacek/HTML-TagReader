@@ -380,13 +380,13 @@ of absolute linke of the type http://....
 
 =head1 OPTIONS
 
- -h this help
+B<-h> this help
 
- -e print only results if an error was found
+B<-e> print only results if an error was found
 
- -E Like -e but print a . for every checked url.
+B<-E> Like -e but print a . for every checked url.
 
- -s print result in short format without the URL
+B<-s> print result in short format without the URL
 
 If no URL is given then tr_httpcheck reads output from 
 \"tr_blck -a\" on stdin and processes it. 

@@ -174,14 +174,14 @@ by just one space. This is to make it easier for the perlexpr.
 
 =head1 OPTIONS
 
--a include all tags. Normally only tags that contain links
+B<-a> include all tags. Normally only tags that contain links
 (e.g <a href=... and not <p> </p>) are passed to the perlexpr.
 That is all tags with href=, src= or background=. With this
 option set you can modify any tag.
 
--h this help
+B<-h> this help
 
--c includes comments. Normally comment tags are not passed
+B<-c> includes comments. Normally comment tags are not passed
 to perlexpr. With this option set you can modify also comments.
 
 =head1 EXAMPLE

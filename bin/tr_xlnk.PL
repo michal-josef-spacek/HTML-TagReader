@@ -64,7 +64,7 @@ my $mode;
 for my $f (@ARGV){
     if ( -r "$f" ){
         if ($opt_p){
-            $changecount=expandonefile("$f","/tmp/none");
+            $changecount=expandonefile("$f","$f");
             if ($verbous>=1){
                 print STDERR "$f:1: $changecount links changed\n";
             }
@@ -140,7 +140,7 @@ sub expandonefile($$){
             $path=~s/[\'\"]//g;
             $ltype=linktype($path);
         }else{
-            print STDERR "$infile:$line: Warning, invalid link in tag $tag[0]\n" if ($verbous >=2);
+            print STDERR "$outfile:$line: Warning, invalid link in tag $tag[0]\n" if ($verbous >=2);
             $fd_out->print($origtag);
             next;
         }
@@ -153,7 +153,7 @@ sub expandonefile($$){
             $fd_out->print($origtag);
             next;
         }
-        $dir=dirname($infile);
+        $dir=dirname($outfile);
         $ckpath="$dir/$path";
         if ( -f "$ckpath"){
             $fd_out->print($origtag);
@@ -181,22 +181,23 @@ sub expandonefile($$){
                 # change the link;
                 my $pos=index($tag[0],"$linktype=$origpath",0);
                 if ($pos){
-                    print STDERR "$infile:$line: expanding $linktype=$origpath -> $linktype=\"$path\"\n" if ($verbous >= 3);
+                    print STDERR "$outfile:$line: expanding $linktype=$origpath -> $linktype=\"$path\"\n" if ($verbous >= 3);
                     substr($tag[0],$pos,length("$linktype=$origpath"))="$linktype=\"$path\"";
                     $count++;
                 }else{
-                    print STDERR "$infile:$line: PROGRAM ERROR, \"$tag[0]\" does not contain \"$linktype=$origpath\"\n" if ($verbous>=1);
+                    print STDERR "$outfile:$line: PROGRAM ERROR, \"$tag[0]\" does not contain \"$linktype=$origpath\"\n" if ($verbous>=1);
                 }
                 $fd_out->print($tag[0]);
                 next;
             }else{
-                print STDERR "$infile:$line: Warning, broken link $linktype=$origpath, can not find index file.\n" if ($verbous >=2);
+                print STDERR "$outfile:$line: Warning, broken link $linktype=$origpath, can not find index file.\n" if ($verbous >=2);
             }
         }else{
-            print STDERR "$infile:$line: Warning, broken link $linktype=$origpath\n" if ($verbous >=2);
+            print STDERR "$outfile:$line: Warning, broken link $linktype=$origpath\n" if ($verbous >=2);
         }
         $fd_out->print($origtag);
     }
+    close(OUT) unless($opt_p);
     $fd_out->close;
     return($count);
 }
@@ -288,16 +289,16 @@ File access permissions are preserved.
 
 =head1 OPTIONS
 
--h short  help
+B<-h> short  help
 
--i index list. Comma seperated list of files to search
+B<-i> index list. Comma seperated list of files to search
 for. Default is:
 index.html,index.htm,index.shtml,default.htm,index.php3,
 index.php,index.wml
 
--p print to stdout and do not modify any files.
+B<-p> print to stdout and do not modify any files.
 
--v verbosity. Number between 0-3. Print information on what is done.
+B<-v> verbosity. Number between 0-3. Print information on what is done.
 Default is 1.
 
 =head1 EXAMPLE

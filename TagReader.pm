@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '0.14';
+$VERSION = '0.50';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -21,22 +21,22 @@ by tags.
 
 =head1 SYNOPSIS
 
-  use HTML::TagReader;
-  # open then file and get an obj-ref:
-  my $p=new HTML::TagReader "filename";
+ use HTML::TagReader;
+ # open then file and get an obj-ref:
+ my $p=new HTML::TagReader "filename";
 
-  # set to zero or undef to omit warnings about html error:
-  $showerrors=1; 
+ # set to zero or undef to omit warnings about html error:
+ $showerr=1; 
 
-  # get only the tags:
-  my $tag = $p->gettag($showerrors);
-    # or
-  my ($tag,$linenumber) = $p->gettag($showerrors);
+ # get only the tags:
+ my $tag = $p->gettag($showerr);
+   # or
+ my ($tag,$linenumber,$column)=$p->gettag($showerr);
 
-  # get the entire file split into tags and text parts:
-  my $tag = $p->getbytoken($showerrors);
-    # or
-  my ($tag,$tagtype,$linenumber) = $p->getbytoken($showerrors);
+ # get the entire file split into tags and text parts:
+ my $tagOrText = $p->getbytoken($showerr);
+   # or
+ my ($tagOrText,$tagtype,$linenumber,$column)=$p->getbytoken($showerr);
 
 =head1 DESCRIPTION
 
@@ -53,43 +53,43 @@ want to implement error messages about html error in your code.
 Here is a program that list all href tags
 in a html file together with it line numbers:
 
-	use TagReader;
-	my $p=new TagReader "file.html";
-	my @tag;
-	while(@tag = $p->gettag(1)){
-		if ($tag[0]=~/ href ?=/i){
-			# remove optional space before the equal sign:
-			$tag[0]=~s/ ?= ?/=/g;
-			print "line: $tag[1]: $tag[0]\n";
-		}
-	}
+    use TagReader;
+    my $p=new TagReader "file.html";
+    my @tag;
+    while(@tag = $p->gettag(1)){
+            if ($tag[0]=~/ href ?=/i){
+                    # remove optional space before the equal sign:
+                    $tag[0]=~s/ ?= ?/=/g;
+                    print "line: $tag[1]: col: $tag[2]: $tag[0]\n";
+            }
+    }
 
 Here is a program that will read a html file tag
 wise:
 
-	use TagReader;
-	my $p=new TagReader "file.html";
-	my @tag;
-	while(@tag = $p->getbytoken(1)){
-		if ($tag[1] eq ""){
-			print "line: $tag[2]: not a tag (some text), \"$tag[0]\"\n\n";
-		}else{
-			print "line: $tag[2]: is a tag, $tag[0]\n\n";
-		}
-	}
+    use TagReader;
+    my $p=new TagReader "file.html";
+    my @tag;
+    while(@tag = $p->getbytoken(1)){
+            if ($tag[1] eq ""){
+                    print "line: $tag[2]: not a tag (some text), \"$tag[0]\"\n\n";
+            }else{
+                    print "line: $tag[2]: col: $tag[2]: is a tag, $tag[0]\n\n";
+            }
+    }
 
 =head2 new HTML::TagReader $file;
 
 Returns a reference to a TagReader object. This reference can
 be used with gettag() or getbytoken() to read the next tag.
 
-=head2 gettag($showerrors);
+=head2 gettag($showerr);
 
-Returns in an array context tag and line number. In a
-scalar context just the next tag.
+Returns in an array context tag, line number and character in the
+line (column). In a scalar context just the next tag is returned.
  
 An empty string or and empty array is returned if the file contains
-no further tags. html/xml comments and any tags inside the comments
+no further tags. HTML/XML comments and any tags inside the comments
 are ignored.
 
 The returned tag string has all white space (tab, newline...) reduced to just a
@@ -111,10 +111,11 @@ a '<' should be written as &lt;
 
 - A single '>' was found outside a tag.
 
-=head2 getbytoken($showerrors);
+=head2 getbytoken($showerr);
 
-Returns in an array context tag, tagtype (a, br, img,...)  and line number. 
-In a scalar context just the next tag.
+Returns in an array context tag, tagtype (a, br, img,...), line number
+and the character position (column) in the line where the tag starts. 
+In a scalar context just the next tag is returned.
 
 An empty string or and empty array is returned if the file contains
 no further tags. 
@@ -135,7 +136,6 @@ a syntax error in the html/sgml/xml code.
 
 Currently only the following warning messages are implemented to
 warn about possible html syntax errors:
-
 
 - A starting '<' was found but no closing '>' after 300 characters
 
