@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -28,10 +29,15 @@ my \$VERSION = \"$VERSION\";
 ";
 
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+        print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et:
 # Copyright: GPL, Author: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_c $opt_a $opt_h);
 use Getopt::Std;
@@ -178,7 +184,7 @@ by just one space. This is to make it easier for the perlexpr.
 =head1 OPTIONS
 
 B<-a> include all tags. Normally only tags that contain links
-(e.g <a href=... and not <p> </p>) are passed to the perlexpr.
+(e.g E<lt>a href=... and not E<lt>pE<gt> E<lt>/pE<gt>) are passed to the perlexpr.
 That is all tags with href=, src= or background=. With this
 option set you can modify any tag.
 
@@ -198,5 +204,3 @@ xlnk is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut
-!NO!SUBS!
-

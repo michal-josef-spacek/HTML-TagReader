@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -28,10 +29,15 @@ my \$VERSION = \"$VERSION\";
 ";
 
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+        print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et:
 # Copyright: GPL, Author: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_p $opt_h);
 use Getopt::Std;
@@ -208,7 +214,7 @@ __END__
 
 =head1 NAME
 
-tr_imgaddsize -- add width and height to <img src=...>
+tr_imgaddsize -- add width and height to E<lt>img src=...E<gt>
 
 =head1 SYNOPSIS
 
@@ -217,7 +223,7 @@ tr_imgaddsize -- add width and height to <img src=...>
 =head1 DESCRIPTION
 
 tr_imgaddsize opens all files listed on the command line and
-edits them if needed. All <img src=...> get width and height
+edits them if needed. All E<lt>img src=...E<gt> get width and height
 added if not already there. This works only for relative
 links (something like src=../images/cool.png)
 
@@ -242,5 +248,4 @@ This program needs Image::Size from
 http://www.cpan.org/authors/id/R/RJ/RJRAY/
 
 =cut
-!NO!SUBS!
 

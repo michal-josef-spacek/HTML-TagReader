@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -28,10 +29,15 @@ my \$VERSION = \"$VERSION\";
 ";
 
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+        print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et:
 # Copyright: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_d $opt_t $opt_h);
 use Getopt::Std;
@@ -219,9 +225,9 @@ doc-root-directory as current working directory.
 
 The SSI must look like this:
 
-<!--#include virtual="filename" -->
+E<lt>!--#include virtual="filename" --E<gt>
 
-<!--#exec cmd="command" -->
+E<lt>!--#exec cmd="command" --E<gt>
 
 The program is useful if you want to generate static html pages
 from dynamic html.
@@ -236,7 +242,7 @@ B<-d> the path to webserver document root directory
 
 cd /home/httpd/html
 
-tr_staticssi -d /home/httpd/html somedir/index.shtml > somedir/expand.html
+tr_staticssi -d /home/httpd/html somedir/index.shtml E<gt> somedir/expand.html
 
 This will expand include and exec directives in index.shtml.
 
@@ -246,5 +252,4 @@ tr_staticssi is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut
-!NO!SUBS!
 

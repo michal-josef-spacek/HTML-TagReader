@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -28,10 +29,15 @@ my \$VERSION = \"$VERSION\";
 ";
 
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+        print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et:
 # Copyright: GPL, Author: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_p $opt_i $opt_h $opt_v);
 use Getopt::Std;
@@ -318,5 +324,4 @@ tr_xlnk is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut
-!NO!SUBS!
 

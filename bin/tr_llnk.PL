@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -28,10 +29,15 @@ my \$VERSION = \"$VERSION\";
 ";
 
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+        print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et:
 # Copyright: GPL, Author: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_l $opt_a $opt_h $opt_A $opt_W $opt_i);
 use Getopt::Std;
@@ -376,7 +382,7 @@ html files.
 
 B<-h> this help
 
-B<-a> list for <a href=...> tags everything until </a>
+B<-a> list for E<lt>a href=...E<gt> tags everything until E<lt>/aE<gt>
 This option implies (-l). You can not use this option
 in combination with tar to pack files together. This is 
 more to look at the links of a web page.
@@ -417,5 +423,4 @@ tr_llnk is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut
-!NO!SUBS!
 

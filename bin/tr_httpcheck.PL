@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -27,11 +28,16 @@ print OUT "$Config{'startperl'} -w
 my \$VERSION = \"$VERSION\";
 ";
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+        print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et: 
 # Copyright: GPL
 # Author: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_E $opt_e $opt_h $opt_s);
 use Getopt::Std;
@@ -506,5 +512,4 @@ Connection: close
 Content-Type: text/html
  
 ENDOFFILE
-!NO!SUBS!
 

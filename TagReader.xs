@@ -15,14 +15,18 @@
 * perlcall            Perl calling conventions from C
 */
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 #include <stdio.h>
 #include <string.h>
-#include <strings.h>
 #include <ctype.h>
+#ifdef __cplusplus
+}
+#endif
 
 
 /* tags longer than TAGREADER_MAX_TAGLEN produce a warning about

@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -28,10 +29,15 @@ my \$VERSION = \"$VERSION\";
 ";
 
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+        print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et:
 # Copyright: GPL, Author: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_p $opt_v $opt_h);
 use Getopt::Std;
@@ -142,7 +148,7 @@ __END__
 
 =head1 NAME
 
-tr_fixltgt -- fix < and > in text parts of html files to become 
+tr_fixltgt -- fix E<lt> and E<gt> in text parts of html files to become 
 &lt; and &gt;
 
 =head1 SYNOPSIS
@@ -152,9 +158,9 @@ tr_fixltgt -- fix < and > in text parts of html files to become
 =head1 DESCRIPTION
 
 tr_fixltgt opens all files listed on the command line and
-edits these files. It will fix < and > in text parts (not in Tags)
+edits these files. It will fix E<lt> and E<gt> in text parts (not in Tags)
 and change them to &lt; and &gt;. This works of course only where
-the < and > are recognized as misplaced. 
+the E<lt> and E<gt> are recognized as misplaced. 
 
 File access permissions are preserved.
 
@@ -178,5 +184,4 @@ tr_fixltgt is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut
-!NO!SUBS!
 

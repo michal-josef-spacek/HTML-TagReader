@@ -78,3 +78,11 @@ Revision history for Perl extension HTML::TagReader.
 0.53 Wed Feb 26 20:45:43 CET 2003
      - updated readme
      - update tr_mvllnk, do not die in case of syntax error in expression
+
+1.00 Fri Mar  7 19:35:04 MET 2003
+     This is now a pretty stable software so we can set it to
+     version 1.00
+     - updated tr_blck: incorrect handling of empty links
+     - disable use of locale
+     - updated TagReader.xs for c++ compatibility
+     - pod sections updated to fix syntax errors

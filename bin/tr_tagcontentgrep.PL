@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+no locale;
 use Config;
 # vim: set sw=4 ts=4 si et:
 use File::Basename qw(basename dirname);
@@ -27,11 +28,16 @@ print OUT "$Config{'startperl'} -w
 my \$VERSION = \"$VERSION\";
 ";
 
-print OUT <<'!NO!SUBS!';
+while(<DATA>){
+    print OUT;
+}
+
+__END__ 
 # vim: set sw=4 ts=4 si et: 
 # Copyright: GPL
 # Author: Guido Socher
 #
+no locale;
 use strict;
 use vars qw($opt_h $opt_l);
 use Getopt::Std;
@@ -123,7 +129,7 @@ but is an example that you can also do 'reading by tag'
 without HTML::TagReader. tr_tagcontentgrep uses plain perl
 and sets the $/ variable. 
 Working without HTML::TagReader causes however problems when working
-with faulty html code where single '<'-characters appear 
+with faulty html code where single 'E<lt>'-characters appear 
 somewhere in the text.
 
 All space in the tags is reduced to max. one space. You can
@@ -142,8 +148,8 @@ tr_tagcontentgrep -l img file.html
 
 would e.g print something like:
 
-index.html:53: <IMG src="../images/transpix.gif" alt="">
-index.html:257: <IMG SRC="../Logo.gif" width=128 height=53>
+index.html:53: E<lt>IMG src="../images/transpix.gif" alt=""E<gt>
+index.html:257: E<lt>IMG SRC="../Logo.gif" width=128 height=53E<gt>
 
 =head1 AUTHOR
 
@@ -151,6 +157,4 @@ tr_tagcontentgrep is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut
-
-!NO!SUBS!
 
