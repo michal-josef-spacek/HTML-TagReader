@@ -6,8 +6,11 @@ Changes
 MANIFEST
 README
 typemap
-bin/blck.PL
-bin/xlnk.PL
-bin/llnk.PL
-bin/httpcheck.PL
+bin/tr_blck.PL
+bin/tr_xlnk.PL
+bin/tr_llnk.PL
+bin/tr_mvlnk.PL
+bin/tr_httpcheck.PL
+bin/tr_staticssi.PL
 bin/run_without_installing
+

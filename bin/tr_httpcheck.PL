@@ -325,8 +325,8 @@ sub parseurl($){
 }
 #------------------
 sub help(){
-    print "httpcheck -- check if a particular web-pages exists 
-USAGE: httpcheck [-heEs] [url1 url2...]
+    print "tr_httpcheck -- check if a particular web-pages exists 
+USAGE: tr_httpcheck [-heEs] [url1 url2...]
 
 OPTIONS: 
 
@@ -338,18 +338,18 @@ OPTIONS:
 
     -s print result in short format without the URL
 
-If no URL is given then httpcheck reads output from 
+If no URL is given then tr_httpcheck reads output from 
 \"blck -a\" on stdin and processes it. 
 Note: This program does only http type of protocol checks. It can e.g not
 check https or ftp.
 
 EXAMPLES: 
  check a single url:
- httpcheck http://www.oche.de/
+ tr_httpcheck http://www.oche.de/
 
  check many URLs extracted with blck
  from web pages:
- blck -a *.html |  httpcheck -E
+ blck -a *.html |  tr_httpcheck -E
 
 You may set the environment variable HTTP_PROXY and NO_PROXY or
 http_proxy and no_proxy to use a proxy. If both are set then the
@@ -357,6 +357,8 @@ uppercase version takes precedence.
 The format of the http_proxy variable looks like \"http://www-proxy:8080/\"
 and the no_proxy is a comma or space seperated list of servers or domains
 for which a direct connection should be made.
+
+tr_httpcheck is part of the HTML::TagReader package.
 \n";
 print "Version: $VERSION\n";
     exit;
@@ -366,15 +368,15 @@ __END__
 
 =head1 NAME
 
-httpcheck -- check if a particular web-pages exists
+tr_httpcheck -- check if a particular web-pages exists
 
 =head1 SYNOPSIS
 
-USAGE: httpcheck [-heEs] [url1 url2...]
+USAGE: tr_httpcheck [-heEs] [url1 url2...]
 
 =head1 DESCRIPTION
 
-httpcheck is a post-processor for blck to allow for checking
+tr_httpcheck is a post-processor for blck to allow for checking
 of absolute linke of the type http://....
 
 =head1 OPTIONS
@@ -387,7 +389,7 @@ of absolute linke of the type http://....
 
  -s print result in short format without the URL
 
-If no URL is given then httpcheck reads output from 
+If no URL is given then tr_httpcheck reads output from 
 \"blck -a\" on stdin and processes it. 
 Note: This program does only http type of protocol checks. It can e.g not
 check https or ftp.
@@ -395,11 +397,11 @@ check https or ftp.
 =head1 EXAMPLES
 
 check a single url:
-httpcheck http://www.oche.de/
+tr_httpcheck http://www.oche.de/
 
 check many URLs extracted with blck
 from web pages:
- blck -a *.html |  httpcheck -E
+ blck -a *.html |  tr_httpcheck -E
 
 =head1 ENVIRONMENT
 
@@ -412,8 +414,24 @@ for which a direct connection should be made.
 
 =head1 AUTHOR
 
-httpcheck is part of the HTML::TagReader package and was written by
+tr_httpcheck is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
+
+=head1 NOTES
+
+If you are interessted in a link checker to check links only via the
+web-server then this is not the right program for you.  This program is
+just a simple addon to blck.  Other programs like e.g
+
+http://linkchecker.sourceforge.net/ or
+
+http://www.linklint.org/ or
+
+http://linkchecker.stacken.kth.se/ (webpage where
+you can enter a url to check)
+
+can be used if you want to check your web-pages only
+remotely via a web server.
 
 =cut
 

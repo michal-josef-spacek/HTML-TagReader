@@ -1,7 +1,7 @@
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
-my @programs_to_install = qw(blck xlnk llnk httpcheck);
+my @programs_to_install = qw(tr_blck tr_xlnk tr_llnk tr_mvlnk tr_httpcheck tr_staticssi);
 
 WriteMakefile(
     'NAME'	=> 'HTML::TagReader',

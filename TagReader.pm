@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '0.08';
+$VERSION = '0.10';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -16,7 +16,8 @@ __END__
 
 =head1 NAME
 
-TagReader - Perl extension module for reading html/sgml/xml tags
+TagReader - Perl extension module for reading html/sgml/xml files
+by tags.
 
 =head1 SYNOPSIS
 
@@ -44,6 +45,10 @@ processing any kind of html/sgml/xml files by tag.
 
 The getbytoken(0) is similar to while(<>) but instead of reading lines 
 it reads tags or tags and text. 
+
+HTML::TagReader makes it easy to keep track of the line number in a file
+even though you are not reading the file by line. This important if you
+want to implement error messages about html error in your code.
 
 Here is a program that list all href tags
 in a html file together with it line numbers:
@@ -96,12 +101,15 @@ You must provide 0 (or undef) or 1 as an argument to gettag.
 If 0 is provided then gettag will not print any errors if it finds
 a syntax error in the html/sgml/xml code.
 
-Currently only the following error cases are implemented:
+Currently only the following warning messages are implemented to
+warn about possible html syntax errors:
 
 - A starting '<' was found but no closing '>' after 300 characters
 
 - A single '<' was found which was not followed by [!/a-zA-Z]. Such
 a '<' should be written as &lt;
+
+- A single '>' was found outside a tag.
 
 =head2 getbytoken($showerrors);
 
@@ -113,7 +121,9 @@ no further tags.
 
 getbytoken() should be used to process a html file and possibly
 modify tags. As opposed to gettag() the getbytoken() does not
-remove newline or space from the data. 
+remove newline or space from the data. getbytoken() gives you 
+access to the entire file and not only to the tags. 
+That is: you can process the tags and the text between the tags. 
 
 tagtype is always lower case. The tagtype is the string starting
 the tag such as "a" in <a href=""> or "!--" in <!-- comment -->.
@@ -123,12 +133,16 @@ You must provide 0 (or undef) or 1 as an argument to getbytoken.
 If 0 is provided then gettag will not print any errors if it finds
 a syntax error in the html/sgml/xml code.
 
-Currently only the following error cases are implemented:
+Currently only the following warning messages are implemented to
+warn about possible html syntax errors:
+
 
 - A starting '<' was found but no closing '>' after 300 characters
 
 - A single '<' was found which was not followed by [!/a-zA-Z]. Such
 a '<' should be written as &lt;
+
+- A single '>' was found outside a tag.
 
 =head2 Limitations
 

@@ -1,5 +1,20 @@
 /* vim: set sw=8 ts=8 si noet: */
-/* read the following man pages: perlxs perlxstut perlguts perlcall  */
+
+/* written by Guido Socher.
+*
+* This program is free software; you can redistribute it
+* and/or modify it under the same terms as Perl itself.
+*/
+
+/* read the following man pages to learn how to use XS and access
+* perl from C: 
+* perlxs              Perl XS application programming interface
+* perlxstut           Perl XS tutorial
+* perlguts            Perl internal functions, variables, data structures for
+*                     C programmer
+* perlcall            Perl calling conventions from C
+*/
+
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -104,7 +119,7 @@ PPCODE:
 		* is much smaller than BUFFLEN */
 		if (bufpos > TAGREADER_MAX_TAGLEN){
 			if (SvTRUE(showerrors)){
-				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, tag not terminated or too long.\n",self->filename,self->tagline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, tag not terminated or too long.\n",self->filename,self->tagline);
 			}
 			self->buffer[bufpos]=ch;bufpos++;
 			self->buffer[bufpos]=(char)0;bufpos++;
@@ -134,7 +149,7 @@ PPCODE:
 					state=1;
 				}else{
 					if (SvTRUE(showerrors)){
-						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
 					}
 				}
 			}
@@ -154,7 +169,7 @@ PPCODE:
 			if(ch=='<'){
 				/* the tag that we were reading was not terminated but instead we ge a new opening */
 				if (SvTRUE(showerrors)){
-					PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, \'>\' inside a tag should be written as &gt;\n",self->filename,self->tagline);
+					PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, \'>\' inside a tag should be written as &gt;\n",self->filename,self->tagline);
 				}
 				state=1;
 				bufpos=0;
@@ -255,7 +270,7 @@ PPCODE:
 				}else{
 					state=2; /* we will be reading a text/paragraph */
 					if (SvTRUE(showerrors)){
-						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
 					}
 				}
 			}else{
@@ -276,10 +291,10 @@ PPCODE:
 				}
 			}
 			if (ch=='<' && SvTRUE(showerrors)) {
-				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' or tag starting at line %d not terminated\n",self->filename,self->fileline,self->tagline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'<\' or tag starting at line %d not terminated\n",self->filename,self->fileline,self->tagline);
 			}
 			if (SvTRUE(showerrors) && bufpos > TAGREADER_MAX_TAGLEN){
-				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, tag not terminated or too long.\n",self->filename,self->tagline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, tag not terminated or too long.\n",self->filename,self->tagline);
 			}
 			if (ch=='>') {
 				/* done reading this tag */
@@ -298,7 +313,7 @@ PPCODE:
 			case 2:
 			/* inside a text. Wait for start of tag */
 			if (ch=='>') {
-				PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'>\' should be written as &gt;\n",self->filename,self->fileline);
+				PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'>\' should be written as &gt;\n",self->filename,self->fileline);
 			}
 			if (ch=='<'){
 				if ( is_start_of_tag(chn)) { /* first char */
@@ -314,7 +329,7 @@ PPCODE:
 				}else{
 					state=2; /* we will be reading a text/paragraph */
 					if (SvTRUE(showerrors)){
-						PerlIO_printf(PerlIO_stderr(),"%s:%d: ERROR, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
+						PerlIO_printf(PerlIO_stderr(),"%s:%d: Warning, single \'<\' should be written as &lt;\n",self->filename,self->fileline);
 					}
 				}
 			}

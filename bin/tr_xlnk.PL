@@ -233,11 +233,11 @@ sub linktype($){
 }
 #----------------------------------
 sub help(){
-print "xlnk -- expand links on directories
+print "tr_xlnk -- expand links on directories
 
-USAGE: xlnk [-hp] [-v level] [-i fname-list] html-files
+USAGE: tr_xlnk [-hp] [-v level] [-i fname-list] html-files
 
-xlnk opens all files listed on the command line and
+tr_xlnk opens all files listed on the command line and
 searches for realtive links on directories. These links
 are expanded to point to the default file (e.g index.html).
 
@@ -259,6 +259,8 @@ OPTIONS:
      -v verbosity. Number between 0-3. Print information on what is done.
      Default is 1.
 
+tr_xlnk is part of the HTML::TagReader package.
+
 version $VERSION
          \n";
 exit(0);
@@ -267,15 +269,15 @@ __END__
 
 =head1 NAME
 
-xlnk -- process html files and expand links on directories 
+tr_xlnk -- process html files and expand links on directories 
 
 =head1 SYNOPSIS
 
-    xlnk [-hp] [-v level] [-i fname-list] html-files
+    tr_xlnk [-hp] [-v level] [-i fname-list] html-files
 
 =head1 DESCRIPTION
 
-xlnk opens all files listed on the command line and
+tr_xlnk opens all files listed on the command line and
 searches for realtive links on directories. These links
 are expanded to point to the default file (e.g index.html).
 
@@ -300,7 +302,7 @@ Default is 1.
 
 =head1 EXAMPLE
 
-xlnk `find . -name '*.htm*'`
+tr_xlnk `find . -name '*.htm*'`
 
 will seach for all html files in this directroy and subdirectories
 and modify the html files such that all links point to the default index
@@ -309,7 +311,7 @@ E.g href="../" would become href="../index.html" if index.html exists.
 
 =head1 AUTHOR
 
-xlnk is part of the HTML::TagReader package and was written by
+tr_xlnk is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut

@@ -19,23 +19,33 @@ make install
 
 
 ------------------- ------------------- -------------------
-The subdirectory bin contains 3 applications of TagReader:
-blck -- check for broken relative links in html pages
-llnk -- list links in html files
-xlnk -- expand links on directories
+The subdirectory bin contains 4 applications of TagReader.
+All of them start with the prefix "tr_"
+tr_blck -- check for broken relative links in html pages
+tr_llnk -- list links in html files
+tr_xlnk -- expand links on directories
+tr_mvlnk -- modify tags in html files with perl commands.
+tr_staticssi -- expand SSI directives #include virtual and #exec cmd
 
-httpcheck -- check if a particular web-pages exists
+tr_httpcheck -- check if a particular web-pages exists
              httpcheck does not directyl use the TagReader module
              but may be used as post processor for blck   
              If you are interessted in a link checker to check
              links only via the web-server then this is not the
              right program for you. Other programs like e.g 
-              http://linkchecker.sourceforge.net/
+
+              http://linkchecker.sourceforge.net/ or
+	      http://www.linklint.org/ or
+              http://linkchecker.stacken.kth.se/ (webpage where
+              you can enter a url to check) or
+	      http://htcheck.sourceforge.net/ or
+	      http://www.jmarshall.com/tools/cl/
+
              can be used if you want to check your web-pages only 
              remotely via a web server. 
 
 Note the primary desing goal of TagReader is to provide a fast
-way of reading html file. 
+way of reading/processing html files. 
 
 These application programs will normally be installed to /usr/bin/
 
@@ -50,7 +60,8 @@ and/or modify it under the same terms as Perl itself.
 Installation requirements: Perl and a c-compiler (e.g gcc)
 ------------------- ------------------- -------------------
 NAME
-    TagReader - Perl extension module for reading html/sgml/xml tags
+    TagReader - Perl extension module for processing html/sgml/xml files
+    by tag.
 
 SYNOPSIS
       use HTML::TagReader;
@@ -126,12 +137,15 @@ DESCRIPTION
     provided then gettag will not print any errors if it finds a syntax
     error in the html/sgml/xml code.
 
-    Currently only the following error cases are implemented:
+    Currently only the following warning messages are implemented to warn
+    about possible html syntax errors:
 
     - A starting '<' was found but no closing '>' after 300 characters
 
     - A single '<' was found which was not followed by [!/a-zA-Z]. Such a
     '<' should be written as &lt;
+
+    - A single '>' was found outside a tag.
 
   getbytoken($showerrors);
 
@@ -153,14 +167,19 @@ DESCRIPTION
     provided then gettag will not print any errors if it finds a syntax
     error in the html/sgml/xml code.
 
-    Currently only the following error cases are implemented:
+    Currently only the following warning messages are implemented to warn
+    about possible html syntax errors:
 
     - A starting '<' was found but no closing '>' after 300 characters
 
     - A single '<' was found which was not followed by [!/a-zA-Z]. Such a
     '<' should be written as &lt;
 
+    - A single '>' was found outside a tag.
+
   Limitations
+
+    There are no limitation to the size of the file.
 
     If you need a more sophisticated interface you might want to take a look
     at HTML::Parser. HTML:TagReader is fast generic and straight forward to

@@ -270,22 +270,22 @@ sub linktype($){
 }
 #----------------------------------
 sub help(){
-print "blck -- check for broken relative links in html pages
+print "tr_blck -- check for broken relative links in html pages
 
-USAGE: blck [-AhW] [-r regexp] html-files
+USAGE: tr_blck [-AhW] [-r regexp] html-files
 
 blck searches html files for broken links. I searches
 only the relative links and does not need a web-server. As
 it does not need web-access it is very fast. The output of
-blck  is of the same format as gcc error messages and
+tr_blck  is of the same format as gcc error messages and
 can therefore be interpreted by many common  editors  (e.g
 emacs  or  vim).   After editing a some html pages you can
 just type:
-blck page1.html ../somewhere/page2.html
-and blck will check that the links in these pages are
+tr_blck page1.html ../somewhere/page2.html
+and tr_blck will check that the links in these pages are
 correct.
 
-blck checks the relative filesystem links.  These are
+tr_blck checks the relative filesystem links.  These are
 links of the form:
 href=\"index.html\"
 href=\"../somepage.html#anchor1\"
@@ -315,22 +315,23 @@ OPTIONS: -h this help
 EXAMPLE
        Check links in html files in the web server root directory
        (/home/httpd/html) and in all directories one level down:
-       (cd /home/httpd/html; blck *.html */*.html)
+       (cd /home/httpd/html; tr_blck *.html */*.html)
 
        Check links in all html files on the server:
-       (cd  /home/httpd/html;  blck  `find  . -name '*.htm*'
+       (cd  /home/httpd/html;  tr_blck  `find  . -name '*.htm*'
        -print` | sort)
 
        You  can  use  the  vim  editor  Quickfix  mode   or   the
-       emacs/xemacs M-x compile to parse the output of blck.
+       emacs/xemacs M-x compile to parse the output of tr_blck.
        This gives you the possibility to open the  concerned  web
        page  and  jump directly to the line where the broken link
        is.  To do this you can write a Makefile that looks e.g as
        follows:
 
        all:
-            blck `find . -name '*.htm*' -print` | sort
+            tr_blck `find . -name '*.htm*' -print` | sort
 
+tr_blck is part of the HTML::TagReader package.
 
 version $VERSION
          \n";
@@ -340,26 +341,26 @@ __END__
 
 =head1 NAME
 
-blck -- check for broken relative links in html pages
+tr_blck -- check for broken relative links in html pages
 
 =head1 SYNOPSIS
 
-    blck [-AhW] [-r regexp] html-files
+    tr_blck [-AhW] [-r regexp] html-files
 
 =head1 DESCRIPTION
 
-blck searches html files for broken links. I searches
+tr_blck searches html files for broken links. I searches
 only the relative links and does not need a web-server. As
 it does not need web-access it is very fast. The output of
-blck  is of the same format as gcc error messages and
+tr_blck  is of the same format as gcc error messages and
 can therefore be interpreted by many common  editors  (e.g
 emacs  or  vim).   After editing a some html pages you can
 just type:
-blck page1.html ../somewhere/page2.html
-and blck will check that the links in these pages are
+tr_blck page1.html ../somewhere/page2.html
+and tr_blck will check that the links in these pages are
 correct.
 
-blck checks the relative filesystem links.  These are
+tr_blck checks the relative filesystem links.  These are
 links of the form:
 href="index.html"
 href="../somepage.html#anchor1"
@@ -396,25 +397,25 @@ tags etc ...).
 
 Check links in html files in the web server root directory
 (/home/httpd/html) and in all directories one level down:
-(cd /home/httpd/html; blck *.html */*.html)
+(cd /home/httpd/html; tr_blck *.html */*.html)
 
 Check links in all html files on the server:
-(cd  /home/httpd/html;  blck  `find  . -name '*.htm*'
+(cd  /home/httpd/html;  tr_blck  `find  . -name '*.htm*'
 -print` | sort)
 
 You  can  use  the  vim  editor  Quickfix  mode   or   the
-emacs/xemacs M-x compile to parse the output of blck.
+emacs/xemacs M-x compile to parse the output of tr_blck.
 This gives you the possibility to open the  concerned  web
 page  and  jump directly to the line where the broken link
 is.  To do this you can write a Makefile that looks e.g as
 follows:
 
 all:
-    blck `find . -name '*.htm*' -print` | sort
+    tr_blck `find . -name '*.htm*' -print` | sort
 
 =head1 AUTHOR
 
-blck is part of the HTML::TagReader package and was written by
+tr_blck is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 

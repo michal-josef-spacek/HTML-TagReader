@@ -236,17 +236,17 @@ sub linktype($){
 }
 #----------------------------------
 sub help(){
-print "llnk -- list links in html files
+print "tr_llnk -- list links in html files
 
-USAGE: llnk [-h] [-AalW] [-i fname-list] html-files
+USAGE: tr_llnk [-h] [-AalW] [-i fname-list] html-files
 
-Without option -A llnk will list only relative links.
+Without option -A tr_llnk will list only relative links.
 The idea of this program is that you run 
-tar cvf pages.tar `llnk index.html something.html`
+tar cvf pages.tar `tr_llnk index.html something.html`
 in order to include files that are referenced by index.html and
 something.html. 
 
-With the option -A you can use llnk to inspect the links in
+With the option -A you can use tr_llnk to inspect the links in
 html files.
 
 OPTIONS: 
@@ -260,7 +260,7 @@ OPTIONS:
          -A list all href=...,  src=..., and background=... tags
          whether they are relative or not.
 
-         -i index list. llnk expands links on directories when possible
+         -i index list. tr_llnk expands links on directories when possible
          by adding the default index file. E.g \"href=../\" becomes
          \"href=../index.html\". This option specifies the search order
          for the index file. It is a comma seperated list of files.
@@ -281,10 +281,12 @@ OPTIONS:
 
 EXAMPLE:
  pack a tar file:
- tar cvf pages.tar `llnk index.html something.html`
+ tar cvf pages.tar `tr_llnk index.html something.html`
 
  inspect a html file:
- llnk -Al something.html
+ tr_llnk -Al something.html
+
+tr_llnk is part of the HTML::TagReader package.
 
 version $VERSION
          \n";
@@ -294,21 +296,21 @@ __END__
 
 =head1 NAME
 
-llnk -- list links in html files
+tr_llnk -- list links in html files
 
 =head1 SYNOPSIS
 
-USAGE: llnk [-h] [-AalW] [-i fname-list] html-files
+USAGE: tr_llnk [-h] [-AalW] [-i fname-list] html-files
 
 =head1 DESCRIPTION
 
-Without option -A llnk will list only relative links.
+Without option -A tr_llnk will list only relative links.
 The idea of this program is that you run 
-tar cvf pages.tar `llnk index.html something.html`
+tar cvf pages.tar `tr_llnk index.html something.html`
 in order to include files that are referenced by index.html and
 something.html. 
 
-With the option -A you can use llnk to inspect the links in
+With the option -A you can use tr_llnk to inspect the links in
 html files.
 
 =head1 OPTIONS
@@ -323,7 +325,7 @@ more to look at the links of a web page.
 -A list all href=...,  src=..., and background=... tags
 whether they are relative or not.
 
--i index list. llnk expands links on directories when possible
+-i index list. tr_llnk expands links on directories when possible
 by adding the default index file. E.g "href=../" becomes
 "href=../index.html". This option specifies the search order
 for the index file. It is a comma seperated list of files.
@@ -345,14 +347,14 @@ tags etc ...).
 =head1 EXAMPLE
 
 pack a tar file:
-tar cvf pages.tar `llnk index.html something.html`
+tar cvf pages.tar `tr_llnk index.html something.html`
 
 inspect a html file:
-llnk -Al something.html
+tr_llnk -Al something.html
 
 =head1 AUTHOR
 
-xlnk is part of the HTML::TagReader package and was written by
+tr_llnk is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
 =cut

@@ -29,3 +29,10 @@ Revision history for Perl extension HTML::TagReader.
      - unlimited file length
      - TagReader.xs re-written to use PerlIO
 
+0.09 Mon Jul 22 22:02:18 CEST 2002
+     - mvlnk added
+
+0.10 Sun Aug 11 22:49:13 CEST 2002
+     - renamed included programs to tr_something
+       e.g tr_mvlnk
+     - added tr_staticssi
