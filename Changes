@@ -48,4 +48,5 @@ Revision history for Perl extension HTML::TagReader.
       was not set.
      - tr_tagcontentgrep added
      - logo added (html_trbutton_small.png)
-
+0.14 Sun Oct  6 15:22:49 CEST 2002 
+     - tr_tagcontentgrep was missing in the package
