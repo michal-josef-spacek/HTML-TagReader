@@ -14,7 +14,7 @@ make test
 make install
 
 Note: the application tr_imgaddsize needs Image::Size but
-if you can install HTML::TagReader without having this
+you can install HTML::TagReader without having this
 module if you don't need tr_imgaddsize.
 ------------------- ------------------- -------------------
 Non-standard Installation:

@@ -70,3 +70,8 @@ Revision history for Perl extension HTML::TagReader.
        otherwise you can loose data when writing. Somehow the close does 
        not seem to flush correctly. I don't know if this is a bug in perl.
 
+0.52 Mon Fri Dec  6 21:58:19 CET 2002
+     - check in makefile for Image::Size
+     - help text of tr_staticssi updated
+     - tr_staticssi: -d optional
+
