@@ -16,6 +16,11 @@ make install
 Note: the application tr_imgaddsize needs Image::Size but
 you can install HTML::TagReader without having this
 module if you don't need tr_imgaddsize.
+
+You can check what the version of a possibly already installed
+HTML::TagReader is by running the command:
+perl -e 'use HTML::TagReader;print $HTML::TagReader::VERSION."\n"'
+
 ------------------- ------------------- -------------------
 Non-standard Installation:
 

@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -37,6 +37,9 @@ by tags.
  my $tagOrText = $p->getbytoken($showerr);
    # or
  my ($tagOrText,$tagtype,$linenumber,$column)=$p->getbytoken($showerr);
+
+ # get the version of HTML::TagReader:
+ my $ver=$HTML::TagReader::VERSION;
 
 =head1 DESCRIPTION
 

@@ -6,9 +6,9 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..21\n"; }
+BEGIN { $| = 1; print "1..24\n"; }
 END {print "nok ok 1\n" unless $loaded;}
-use TagReader;
+use HTML::TagReader;
 $loaded = 1;
 print "ok 1\n";
 
@@ -88,7 +88,7 @@ open(OUT,"> $tf")||die "ERROR: can not write $tf\n";
 print OUT "<bla a=x> < <tag \t\n1>\n";
 print OUT "<!DOCTYPE xx><TITLE>The web</TITLE>\n";
 print OUT "<a href=\"http://linuxfocus.org\">\n";
-print OUT "<!--- <br> ------>\n \n<ende>\n";
+print OUT "<!--- <br> ------>\n \n<ende><H2>\n";
 close OUT;
 
 my $p=new HTML::TagReader "$tf";
@@ -193,6 +193,14 @@ $i++;
 
 @tag = $p->getbytoken(1);
 if ($tag[0] eq "<ende>" && $tag[1] eq "ende" && $tag[2] == 7){
+	print "ok $i\n";
+}else{
+	print "nok $i (@tag)\n";
+}
+$i++;
+
+@tag = $p->getbytoken(1);
+if ($tag[0] eq "<H2>" && $tag[1] eq "h2" && $tag[2] == 7){
 	print "ok $i\n";
 }else{
 	print "nok $i (@tag)\n";

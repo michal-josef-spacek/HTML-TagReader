@@ -92,3 +92,6 @@ Revision history for Perl extension HTML::TagReader.
 
 1.02 Sat Jul 19 15:38:35 CEST 2003
      - wrong tagtype if tag contained numbers such as e.g <h2>
+
+1.03 Sun Jul 20 15:29:19 CEST 2003
+     - more test cases
