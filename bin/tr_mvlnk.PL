@@ -105,7 +105,10 @@ sub expandonefile($$){
         $tagnospace=~s/\s+/ /g; # kill newline and double space
         $_=$tagnospace;
         eval $expr;
-        die $@ if $@;
+        if ($@){
+            warn $@;
+            $_=$tagnospace; # restore any messed up data in case of syntax error
+        }
         if ($tagnospace ne $_){
             print OUT $_;
             $count++;
@@ -145,7 +148,7 @@ OPTIONS:
 
 EXAMPLES: 
      Change links to tldp.org/linuxfocus to linuxfocus.org:
-     tr_mvlnk 's!tldp.org/linuxfocus!linuxfocus.org!' index.html
+     tr_mvlnk 's|tldp.org/linuxfocus|linuxfocus.org|' index.html
 
 tr_mvlnk is part of the HTML::TagReader package.
 
@@ -187,7 +190,7 @@ to perlexpr. With this option set you can modify also comments.
 =head1 EXAMPLE
 
 Change links to tldp.org/linuxfocus to linuxfocus.org:
-tr_mvlnk 's!tldp.org/linuxfocus!linuxfocus.org!' index.html
+tr_mvlnk 's|tldp.org/linuxfocus|linuxfocus.org|' index.html
 
 =head1 AUTHOR
 

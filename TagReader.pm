@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '0.52';
+$VERSION = '0.53';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -51,7 +51,7 @@ even though you are not reading the file by line. This important if you
 want to implement error messages about html errors in your code.
 
 Here is a program that list all href tags
-in a html file together with line numbers:
+in a html file together with line numbers and column:
 
     use TagReader;
     my $p=new TagReader "file.html";

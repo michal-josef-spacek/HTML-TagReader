@@ -118,7 +118,7 @@ DESCRIPTION
     want to implement error messages about html error in your code.
 
     Here is a program that list all href tags in a html file together with
-    it line numbers:
+    line numbers and column:
 
         use TagReader;
         my $p=new TagReader "file.html";

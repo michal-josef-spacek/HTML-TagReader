@@ -75,3 +75,6 @@ Revision history for Perl extension HTML::TagReader.
      - help text of tr_staticssi updated
      - tr_staticssi: -d optional
 
+0.53 Wed Feb 26 20:45:43 CET 2003
+     - updated readme
+     - update tr_mvllnk, do not die in case of syntax error in expression
