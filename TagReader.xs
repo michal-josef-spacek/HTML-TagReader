@@ -49,8 +49,15 @@ typedef struct trstuct{
 	char *buffer;
 } *HTML__TagReader;
 
+/* WIN32 stuff from: DH <crazyinsomniac at yahoo.com>, 
+ * http://testers.cpan.org/ */
+#ifdef WIN32                                                                
+#define THEINLINE __forceinline                                             
+#else                                                                       
+#define THEINLINE inline                                                    
+#endif       
 /* start of a html tag (first char in the tag) */
-static inline int is_start_of_tag(int ch){
+static THEINLINE int is_start_of_tag(int ch){
 	if (ch=='!' || ch=='/' || ch=='?' || isalnum(ch)){
 		return(1);
 	}

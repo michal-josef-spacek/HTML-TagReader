@@ -95,3 +95,6 @@ Revision history for Perl extension HTML::TagReader.
 
 1.03 Sun Jul 20 15:29:19 CEST 2003
      - more test cases
+
+1.04 Sun Aug  3 04:23:40 CEST 2003
+     - make it compile under windows
