@@ -41,6 +41,7 @@ sub help();
 sub showonefile($);
 sub linktype($);
 sub dirname($);
+sub flattenpath($);
 #
 my @possibilities= qw(index.html index.htm index.shtml default.htm index.php3 index.php index.wml);
 my %killduplicate;
@@ -54,7 +55,6 @@ if ($opt_a){
 if ($opt_i){
     @possibilities=split(/,/,$opt_i);
 }
-
 for my $f (@ARGV){
     if ( -r "$f" ){
         showonefile($f);
@@ -150,11 +150,7 @@ sub showonefile($){
                     $dir=dirname($infile);
                     $ckpath="$dir/$path";
                     if ( -f "$ckpath"){
-                        # not a directory:
-                        # change xxx/./yy/a -> xxx/yy/a 
-                        $ckpath=~s!/\./!/!g;
-                        # change ./yy/a -> yy/a
-                        $ckpath=~s!^\./!!g;
+                        $ckpath=flattenpath($ckpath);
                         print "$ckpath\n" unless($killduplicate{$ckpath});
                         $killduplicate{$ckpath}=1;
                         next;
@@ -173,10 +169,7 @@ sub showonefile($){
                             if ( -f "$ckpath/$i"){
                                 # found:
                                 $ckpath="$ckpath/$i";
-                                # change xxx/./yy/a -> xxx/yy/a 
-                                $ckpath=~s!/\./!/!g;
-                                # change ./yy/a -> yy/a
-                                $ckpath=~s!^\./!!g;
+                                $ckpath=flattenpath($ckpath);
                                 print "$ckpath\n" unless($killduplicate{$ckpath});
                                 $killduplicate{$ckpath}=1;
                                 $found=1;
@@ -186,12 +179,12 @@ sub showonefile($){
                     }
                     if(!$found){
                         if ($ltype eq 'rel'){
-                            # change ./yy/a -> yy/a
                             $ckpath="$dir/$path";
-                            $ckpath=~s!^\./!!g;
+                            $ckpath=flattenpath($ckpath);
                             print "$ckpath\n" unless($killduplicate{"$ckpath"});
                             $killduplicate{"$ckpath"}=1;
                         }else{
+                            $path=flattenpath($path);
                             print "$path\n" unless($killduplicate{$path});
                             $killduplicate{$path}=1;
                         }
@@ -202,6 +195,63 @@ sub showonefile($){
             print STDERR "$infile:$line: Warning, broken link $tag[0]\n" unless($opt_W);
         }
     }
+}
+#----------------------------------
+#  remove .. in a path, by compensating it with previous path components. 
+# /zz/../xx becomes /xx
+# /zz/../../xx becomes ../xx
+# /yy/zz/vv/../../xx becomes /yy/xx
+sub flattenpath($){
+    my $p=shift;
+    # change x/./y to x/y
+    $p=~s!/\./!/!g;
+    # change ./yy/a -> yy/a
+    $p=~s!^\./!!g;
+    my @marker; # in this 1 means keep 0 means del
+    my @components=split(/\//,$p);
+    # now go through components and when you find a ".." then
+    # kill the previous component unless it is empty:
+    if (scalar @components < 3){
+        # too short nothing to do
+        return($p);
+    }
+    my $i=-1;
+    my ($found,$j,$cc);
+    for my $c (@components){
+        $i++;
+        $marker[$i]=1;
+        if ($i==0){
+            # skip first
+            next;
+        }
+        if ($c && $c eq ".."){
+            # now seach back 
+            $j=$i;
+            $found=0;
+            while($j && $found==0){
+                $j--;
+                $cc=$components[$j];
+                if ($cc && $marker[$j] && $cc ne ".." && $cc ne "."){
+                    $marker[$j]=0; #kill this component
+                    $marker[$i]=0; #kill this component
+                    $found=1;
+                }
+            }
+        }
+    }
+    # now build a new array with the right components
+    my @nc;
+    $i=0;
+    for my $c (@components){
+        if ($marker[$i]){
+            push(@nc,$c);
+        }
+        $i++;
+    }
+    $p=join("/",@nc);
+    # kill //
+    $p=~s!//+!/!g;
+    return($p);
 }
 #----------------------------------
 # get the directory name from file name

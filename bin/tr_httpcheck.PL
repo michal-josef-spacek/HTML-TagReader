@@ -95,7 +95,7 @@ if ($http_proxy){
     }
 }
 if (scalar @ARGV < 1){
-    # read output of blck -a on stdin 
+    # read output of tr_blck -a on stdin 
     $|=1; #flush for dot printing
     while(<>){
         chomp;
@@ -339,7 +339,7 @@ OPTIONS:
     -s print result in short format without the URL
 
 If no URL is given then tr_httpcheck reads output from 
-\"blck -a\" on stdin and processes it. 
+\"tr_blck -a\" on stdin and processes it. 
 Note: This program does only http type of protocol checks. It can e.g not
 check https or ftp.
 
@@ -347,9 +347,9 @@ EXAMPLES:
  check a single url:
  tr_httpcheck http://www.oche.de/
 
- check many URLs extracted with blck
+ check many URLs extracted with tr_blck
  from web pages:
- blck -a *.html |  tr_httpcheck -E
+ tr_blck -a *.html |  tr_httpcheck -E
 
 You may set the environment variable HTTP_PROXY and NO_PROXY or
 http_proxy and no_proxy to use a proxy. If both are set then the
@@ -376,7 +376,7 @@ USAGE: tr_httpcheck [-heEs] [url1 url2...]
 
 =head1 DESCRIPTION
 
-tr_httpcheck is a post-processor for blck to allow for checking
+tr_httpcheck is a post-processor for tr_blck to allow for checking
 of absolute linke of the type http://....
 
 =head1 OPTIONS
@@ -390,7 +390,7 @@ of absolute linke of the type http://....
  -s print result in short format without the URL
 
 If no URL is given then tr_httpcheck reads output from 
-\"blck -a\" on stdin and processes it. 
+\"tr_blck -a\" on stdin and processes it. 
 Note: This program does only http type of protocol checks. It can e.g not
 check https or ftp.
 
@@ -399,9 +399,9 @@ check https or ftp.
 check a single url:
 tr_httpcheck http://www.oche.de/
 
-check many URLs extracted with blck
+check many URLs extracted with tr_blck
 from web pages:
- blck -a *.html |  tr_httpcheck -E
+ tr_blck -a *.html |  tr_httpcheck -E
 
 =head1 ENVIRONMENT
 
@@ -421,7 +421,7 @@ Guido Socher [guido(at)linuxfocus.org]
 
 If you are interessted in a link checker to check links only via the
 web-server then this is not the right program for you.  This program is
-just a simple addon to blck.  Other programs like e.g
+just a simple addon to tr_blck.  Other programs like e.g
 
 http://linkchecker.sourceforge.net/ or
 

@@ -36,3 +36,6 @@ Revision history for Perl extension HTML::TagReader.
      - renamed included programs to tr_something
        e.g tr_mvlnk
      - added tr_staticssi
+0.11 Sun Sep  1 21:53:30 CEST 2002
+     - tr_blck add option -d for checking of abs file system links
+     - tr_llnk cleanup path components with ".." xx/../yy -> yy

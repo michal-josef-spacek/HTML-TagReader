@@ -32,7 +32,7 @@ print OUT <<'!NO!SUBS!';
 # Copyright: GPL, Author: Guido Socher
 #
 use strict;
-use vars qw($opt_a $opt_r $opt_W $opt_A $opt_h);
+use vars qw($opt_a $opt_d $opt_r $opt_W $opt_A $opt_h);
 use Getopt::Std;
 use HTML::TagReader;
 #
@@ -42,7 +42,7 @@ sub checkonefile_nameonly($);
 sub dirname($);
 sub linktype($);
 #
-getopts("aAhr:W")||die "ERROR: No such option. -h for help.\n";
+getopts("aAhd:r:W")||die "ERROR: No such option. -h for help.\n";
 help() if ($opt_h);
 help() unless ($ARGV[0]);
 
@@ -53,6 +53,9 @@ my %checkedfiles;
 my $later=1;
 if ($opt_A || $opt_a){
     $later=0;
+}
+if ($opt_d && length($opt_d)> 1){
+    $opt_d=~s/\/$//; # kill tailing slash
 }
 for my $f (@ARGV){
     if ( -r "$f" ){
@@ -192,7 +195,7 @@ sub checkonefile($$){
             }
         }
         if ($opt_a){
-            if ($ltype eq "proto://" || $ltype eq "/absfile"){
+            if ($ltype eq "proto://"){
                 print "$file:$line: $linktype=\"$path\"\n";
             }
             #
@@ -206,11 +209,31 @@ sub checkonefile($$){
             push(@checklater,[$file.$path,"$file:$line: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
             next;
         }
-        if ($ltype eq 'absanchor'){
+        #---
+        if ($ltype eq "/absfile"){
+            unless($opt_d){
+                print "$file:$line: ERROR: can not check $linktype=\"$path\", secify docroot with -d.\n";
+                next;
+            }
+            if ($path=~/^(.+)#/){ # link to named anchor
+                $ckpath=$1;
+                if ( -f "$opt_d/$ckpath" ){
+                    # add path and possible error message:
+                    push(@checklater,["$opt_d/$path","$file:$line: reference to non existing anchor $linktype=\"$path\"\n"]) if ($later);
+                }else{
+                    print "$file:$line: reference to non existing file $linktype=\"$path\"\n";
+                }
+                next;
+            }
+            $ckpath=$path;
+            unless ( -f "$opt_d/$ckpath" || -d "$opt_d/$ckpath" ){
+                print "$file:$line: broken link $linktype=\"$path\"\n";
+            }
             next;
         }
+        #---
         $dir=dirname($file);
-        if ($path=~/^(.+)#/){
+        if ($path=~/^(.+)#/){ # link to named anchor
             $ckpath=$1;
             next if ($ltype ne 'rel');
             if ( -f "$dir/$ckpath" ){
@@ -230,6 +253,8 @@ sub checkonefile($$){
         # handle cgi's:
         $ckpath=$path;
         $ckpath=~s/\?.*//;
+        #---
+        # finally check if this is a broken link:
         if ($ltype eq 'rel'){
             unless ( -f "$dir/$ckpath" || -d "$dir/$ckpath" ){
                 print "$file:$line: broken link $linktype=\"$path\"\n";
@@ -272,7 +297,7 @@ sub linktype($){
 sub help(){
 print "tr_blck -- check for broken relative links in html pages
 
-USAGE: tr_blck [-AhW] [-r regexp] html-files
+USAGE: tr_blck [-AhW] [-d docroot] [-r regexp] html-files
 
 blck searches html files for broken links. I searches
 only the relative links and does not need a web-server. As
@@ -300,15 +325,20 @@ All tags containg relative links with  href=...,  src=...,
 and background=...  are checked.
 
 OPTIONS: -h this help
-         -a print all links that were not checked (proto:// and
-         absolute file system links starting with \'/\') and
+
+         -a print all links that were not checked (proto://) and
          do not check for any broken links. This output can be
          processed further with httpcheck.
          -A do not open any other files than the files given on the
+
+         -d document root directory to check abs. filesystem links
+         e.g -d /home/httpd/html
+
          -r warn about absolut links matching the given perl regexp
          E.g: -w \'www.linuxfocus.org|chem.pitt.edu\'
          This match is not case sensitive and only applied to links
          starting with proto:// (=absolut links).
+
          -W do not print warnings about html errors (not terminated
          tags etc ...).
 
@@ -345,7 +375,7 @@ tr_blck -- check for broken relative links in html pages
 
 =head1 SYNOPSIS
 
-    tr_blck [-AhW] [-r regexp] html-files
+    tr_blck [-AhW] [-d docroot] [-r regexp] html-files
 
 =head1 DESCRIPTION
 
@@ -378,12 +408,14 @@ and background=...  are checked.
 
 -h short help message
 
--a print all links that were not checked (proto:// and
-absolute file system links starting with \'/\') and
+-a print all links that were not checked (proto://) and
 do not check for any broken links. This output can be
 processed further with httpcheck.
 
 -A do not open any other files than the files given on the
+
+-d document root directory to check abs. filesystem links
+e.g -d /home/httpd/html
 
 -r warn about absolut links matching the given perl regexp
 E.g: -w \'www.linuxfocus.org|chem.pitt.edu\'
@@ -418,6 +450,6 @@ all:
 tr_blck is part of the HTML::TagReader package and was written by
 Guido Socher [guido(at)linuxfocus.org]
 
-
+=cut
 !NO!SUBS!
 

@@ -176,7 +176,8 @@ The SSI must look like this:
 The program is useful if you want to generate static html pages
 from dynamic html.
 
-EXAMPLE: tr_staticssi -d /home/httpd/html /home/httpd/html/index.shtml
+EXAMPLE: 
+tr_staticssi -d /home/httpd/html index.shtml > expand.html
 
 tr_staticssi is part of the HTML::TagReader package.
 
@@ -221,7 +222,7 @@ from dynamic html.
 
 cd /home/httpd/html
 
-tr_staticssi -d /home/httpd/html index.shtml
+tr_staticssi -d /home/httpd/html index.shtml > expand.html
 
 This will expand include and exec directives in index.shtml.
 
