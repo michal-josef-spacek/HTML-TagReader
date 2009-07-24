@@ -99,6 +99,13 @@ sub readssifiles($$$$){
     }
     $count++;
     return 0 if ($count > 3);
+    # it is possible to have an include virtual like this:
+    # <!--#include virtual="../../dynidx.shtml?September2004/article345.shtml" -->
+    delete $ENV{'QUERY_STRING'};
+    if ($file=~/^(.+)\?(.+)/){
+        $ENV{'QUERY_STRING'}=$2;
+        $file=$1;
+    }
     unless( -f "$file"){
         print STDERR "WARNING: tr_staticssi, not a file $file, ssi ignored, while working on $firstfile\n"; 
         return 0;

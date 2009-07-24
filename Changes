@@ -112,7 +112,13 @@ Revision history for Perl extension HTML::TagReader.
     - ERROR: filename must be a string scalar at ... was printed in some cases even
       if a scalar was provided.
 
-Sun Aug 22 19:01:44 CEST 2004
+1.08 Sun Aug 22 19:01:44 CEST 2004
     - add url decoding as suggested by Gerrit Renker
 
+1.09 Sun Oct  3 17:29:51 CEST 2004
+    - improved flattenpath subroutine in tr_llnk
+    - setenv QUERY_STRING in tr_staticssi
+
+1.10 Wed Dec  7 19:25:06 CET 2005
+    - man-page editorial update
 # end of changes

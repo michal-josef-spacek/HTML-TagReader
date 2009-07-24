@@ -221,55 +221,41 @@ sub flattenpath($){
     $p=~s!/\./!/!g;
     # change ./yy/a -> yy/a
     $p=~s!^\./!!g;
-    my @marker; # in this 1 means keep 0 means del
-    my @components=split(/\//,$p);
-    # now go through components and when you find a ".." then
-    # kill the previous component unless it is empty:
-    if (scalar @components < 3){
-        # too short nothing to do
-        return($p);
-    }
-    my $i=-1;
-    my ($found,$j,$cc);
-    for my $c (@components){
-        $i++;
-        $marker[$i]=1;
-        if ($i==0){
-            # skip first
-            next;
-        }
-        if ($c && $c eq ".."){
-            # now seach back 
-            $j=$i;
-            $found=0;
-            while($j && $found==0){
-                $j--;
-                $cc=$components[$j];
-                if ($cc && $marker[$j] && $cc ne "."){
-                    $found=1;
-                    if ($cc eq ".."){
-                        # don't remove this, don't go further back
-                        next;
-                    }
-                    $marker[$j]=0; #kill this component
-                    $marker[$i]=0; #kill this component
-                }
+    return($p) unless($p=~m!/!);
+    # the first component is empty if path starts with a slash
+    my @pstack=split(/\//,$p);
+    my $i = $#pstack-1;
+    my $rmcnt=0;
+    my @valcomp; # components we keep
+    my $result="";
+    while ($i>=0){
+        if ($pstack[$i] eq '..'){
+            $rmcnt++;
+        }else{
+            if ($rmcnt && $pstack[$i]){
+                # compensate this component for ..
+                $rmcnt--;
+            }else{
+                unshift(@valcomp,$i);
             }
         }
+        $i--;
     }
-    # now build a new array with the right components
-    my @nc;
-    $i=0;
-    for my $c (@components){
-        if ($marker[$i]){
-            push(@nc,$c);
-        }
-        $i++;
+    if (!$pstack[0]){
+        # first empty component -> leading slash
+        $result='/';
+        shift @valcomp;
     }
-    $p=join("/",@nc);
-    # kill //
-    $p=~s!//+!/!g;
-    return($p);
+    # non compensatable "..":
+    while ($rmcnt){
+        $result .= '../';
+        $rmcnt--;
+    }
+    for $i (@valcomp){
+        $result .= $pstack[$i].'/'; 
+    }
+    $result .= $pstack[$#pstack];
+    return($result);
 }
 #----------------------------------
 # get the directory name from file name

@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA);
 require DynaLoader;
 
 @ISA = qw(DynaLoader);
-$VERSION = '1.08';
+$VERSION = '1.10';
 
 bootstrap HTML::TagReader $VERSION;
 
@@ -56,8 +56,8 @@ want to implement error messages about html errors in your code.
 Here is a program that list all href tags
 in a html file together with line numbers and column:
 
-    use TagReader;
-    my $p=new TagReader "file.html";
+    use HTML::TagReader;
+    my $p=new HTML::TagReader "file.html";
     my @tag;
     while(@tag = $p->gettag(1)){
             if ($tag[0]=~/ href ?=/i){
@@ -70,8 +70,8 @@ in a html file together with line numbers and column:
 Here is a program that will read a html file tag
 wise:
 
-    use TagReader;
-    my $p=new TagReader "file.html";
+    use HTML::TagReader;
+    my $p=new HTML::TagReader "file.html";
     my @tag;
     while(@tag = $p->getbytoken(1)){
             if ($tag[1] eq ""){
